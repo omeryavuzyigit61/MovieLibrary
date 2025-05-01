@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/movieListFragment">
+
+    <fragment
+        android:id="@+id/movieListFragment"
+        android:name= "com.allmoviedatabase.movielibrary.view.fragment.MovieListFragment"
+        android:label="fragment_movie_list"
+        tools:layout="@layout/fragment_movie_list" />
+    <fragment
+        android:id="@+id/televisionSeriesFragment"
+        android:name="com.allmoviedatabase.movielibrary.view.fragment.TelevisionSeriesFragment"
+        android:label="fragment_television_series"
+        tools:layout="@layout/fragment_television_series" />
+</navigation>

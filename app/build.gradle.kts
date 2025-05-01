@@ -1,7 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("com.google.devtools.ksp") version "2.1.20-2.0.1"
+    alias(libs.plugins.google.dagger.hilt)
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -38,8 +39,10 @@ android {
         viewBinding = true
     }
 }
-dependencies {
+/*android { namespace 'com.example.data' }
+android { namespace = "com.allmoviedatabase.movielibrary.model" }*/
 
+dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -61,4 +64,8 @@ dependencies {
     //dagger-hilt
     implementation(libs.hilt.android)
     ksp(libs.google.dagger.hilt.compiler)
+
+    //navigation
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
 }
