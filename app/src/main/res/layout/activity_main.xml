@@ -8,6 +8,7 @@
     tools:context=".view.activity.MainActivity">
 
     <androidx.fragment.app.FragmentContainerView
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:id="@+id/movie_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

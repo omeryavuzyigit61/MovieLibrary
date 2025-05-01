@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import com.allmoviedatabase.movielibrary.model.Movie
 import com.allmoviedatabase.movielibrary.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,12 +23,15 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
     val error: MutableLiveData<String> = _error
 
     fun fetchPopularMovies(language: String, page: Int) {
-        movieRepository.fetchPopularMovies(language, page).subscribe({ movies ->
-            _popularMovies.value = movies.results
-        }, { error ->
-            _error.value = error.message
-        }).let {
-            compositeDisposable.add(it)
-        }
+        movieRepository.fetchPopularMovies(language, page)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ baseMovie ->
+                _popularMovies.value = baseMovie.results
+            }, { error ->
+                _error.value = error.message
+            }).let {
+                compositeDisposable.add(it)
+            }
     }
 }
