@@ -1,2 +1,0 @@
-module MovieLibrary.app.main {
-}
