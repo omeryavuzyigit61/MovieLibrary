@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/ratingProgressIndıcator"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:indicatorSize="45dp"
+        android:layout_marginStart="8dp"
+        android:indeterminate="false"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintStart_toStartOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:trackColor="@color/rating_color"
+        app:trackThickness="6dp" />
+
+    <TextView
+        android:id="@+id/titleNameTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toStartOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/ratingProgressIndıcator" />
+
+    <TextView
+        android:id="@+id/ratingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:backgroundTint="@color/transparent"
+        app:layout_constraintBottom_toBottomOf="@+id/ratingProgressIndıcator"
+        app:layout_constraintEnd_toEndOf="@+id/ratingProgressIndıcator"
+        app:layout_constraintStart_toStartOf="@+id/ratingProgressIndıcator"
+        app:layout_constraintTop_toTopOf="@+id/ratingProgressIndıcator" />
+
+    <TextView
+        android:id="@+id/dateMovieTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/titleNameTextView"
+        app:layout_constraintTop_toBottomOf="@+id/titleNameTextView" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,4 +4,16 @@
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
+    <style name="SearchScreen">
+        <item name="android:backgroundTint">@color/light_gray
+        </item>
+        <item name="android:textColor">@color/white
+        </item>
+        <item name="drawableTint">@color/white</item>
+    </style>
+
+    <style name="BackgroundScreen">
+        <item name="android:background">@color/gray</item>
+    </style>
+
 </resources>

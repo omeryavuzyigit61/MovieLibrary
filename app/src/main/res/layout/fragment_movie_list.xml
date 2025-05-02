@@ -2,19 +2,104 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/BackgroundScreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.fragment.MovieListFragment">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/searchEditText"
+        style="@style/SearchScreen"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/search_background"
+        android:drawableStart="@drawable/search"
+        android:drawablePadding="16dp"
+        android:ems="10"
+        android:hint="Film Ara"
+        android:inputType="text"
+        android:paddingStart="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RadioGroup
+        android:id="@+id/searchRadioGroup"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Merhaba"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:checkedButton="@id/popularMovieRadioButton"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchEditText">
+
+        <RadioButton
+            android:id="@+id/popularMovieRadioButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/custom_radio_background"
+            android:button="@null"
+            android:padding="8dp"
+            android:text="Popüler"
+            android:textAlignment="center"
+            android:textColor="@color/white" />
+
+        <RadioButton
+            android:id="@+id/bestMovieRadioButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/custom_radio_background"
+            android:button="@null"
+            android:padding="8dp"
+            android:text="En İyiler"
+            android:textAlignment="center"
+            android:textColor="@color/white" />
+
+        <RadioButton
+            android:id="@+id/nowPlayingMovieRadioButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/custom_radio_background"
+            android:button="@null"
+            android:padding="8dp"
+            android:text="Yayında"
+            android:textAlignment="center"
+            android:textColor="@color/white" />
+
+        <RadioButton
+            android:id="@+id/upcomingMovieRadioButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/custom_radio_background"
+            android:button="@null"
+            android:padding="8dp"
+            android:text="Yakında"
+            android:textAlignment="center"
+            android:textColor="@color/white" />
+    </RadioGroup>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/movieListRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
-
+        app:layout_constraintTop_toBottomOf="@+id/searchRadioGroup"
+        app:layout_constraintVertical_bias="0.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>

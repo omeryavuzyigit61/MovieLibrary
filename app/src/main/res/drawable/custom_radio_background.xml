@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/main_color" /> <!-- Seçili durum: turuncu -->
+            <corners android:radius="16dp" /> <!-- Oval köşeler -->
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/rating_color" /> <!-- Seçili değilse: gri -->
+            <corners android:radius="16dp" /> <!-- Oval köşeler -->
+        </shape>
+    </item>
+</selector>

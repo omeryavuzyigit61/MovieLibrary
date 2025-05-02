@@ -6,4 +6,17 @@
     </style>
 
     <style name="Theme.MovieLibrary" parent="Base.Theme.MovieLibrary" />
+
+    <style name="SearchScreen">
+        <item name="android:backgroundTint">@color/white
+        </item>
+        <item name="android:textColor">@color/black
+        </item>
+        <item name="drawableTint">@color/gray</item>
+    </style>
+
+    <style name="BackgroundScreen">
+        <item name="android:background">@color/background_color
+        </item>
+    </style>
 </resources>
