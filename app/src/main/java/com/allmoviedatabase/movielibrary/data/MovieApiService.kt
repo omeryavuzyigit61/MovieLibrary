@@ -11,4 +11,23 @@ interface MovieApiService {
         @Query("language") language: String,
         @Query("page") page: Int
     ): Single<BaseMovie>
+
+    @GET("movie/now_playing")
+    fun getNowPlayingMovies(
+        @Query("language") language: String,
+        @Query("page") page: Int
+    ): Single<BaseMovie>
+
+    @GET("movie/top_rated")
+    fun getTopRatedMovies(
+        @Query("language") language: String,
+        @Query("page") page: Int
+    ): Single<BaseMovie>
+
+    @GET("movie/upcoming")
+    fun getUpcomingMovies(
+        @Query("language") language: String,
+        @Query("page") page: Int
+    ): Single<BaseMovie>
+
 }

@@ -15,13 +15,22 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
 
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/circle_background"
+        app:layout_constraintBottom_toBottomOf="@+id/ratingProgressIndıcator"
+        app:layout_constraintTop_toTopOf="@+id/ratingProgressIndıcator"
+        app:layout_constraintEnd_toEndOf="@+id/ratingProgressIndıcator"
+        app:layout_constraintStart_toStartOf="@+id/ratingProgressIndıcator" />
+
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/ratingProgressIndıcator"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        app:indicatorSize="45dp"
         android:layout_marginStart="8dp"
         android:indeterminate="false"
+        app:indicatorSize="45dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView"
         app:layout_constraintStart_toStartOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
@@ -47,6 +56,7 @@
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textSize="12sp"
+        android:textColor="@color/white"
         android:backgroundTint="@color/transparent"
         app:layout_constraintBottom_toBottomOf="@+id/ratingProgressIndıcator"
         app:layout_constraintEnd_toEndOf="@+id/ratingProgressIndıcator"
