@@ -9,10 +9,21 @@
         android:id="@+id/movieListFragment"
         android:name= "com.allmoviedatabase.movielibrary.view.fragment.MovieListFragment"
         android:label="fragment_movie_list"
-        tools:layout="@layout/fragment_movie_list" />
+        tools:layout="@layout/fragment_movie_list" >
+        <action
+            android:id="@+id/action_movieListFragment_to_detailMovieFragment"
+            app:destination="@id/detailMovieFragment" />
+    </fragment>
     <fragment
         android:id="@+id/televisionSeriesFragment"
         android:name="com.allmoviedatabase.movielibrary.view.fragment.TelevisionSeriesFragment"
         android:label="fragment_television_series"
         tools:layout="@layout/fragment_television_series" />
+    <fragment
+        android:id="@+id/detailMovieFragment"
+        android:name="com.allmoviedatabase.movielibrary.view.fragment.DetailMovieFragment"
+        android:label="fragment_detail_movie"
+        tools:layout="@layout/fragment_detail_movie" >
+        <argument android:name="movieId" app:argType="integer" />
+    </fragment>
 </navigation>

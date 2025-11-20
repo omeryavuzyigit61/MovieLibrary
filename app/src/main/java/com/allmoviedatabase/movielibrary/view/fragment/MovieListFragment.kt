@@ -1,23 +1,24 @@
 package com.allmoviedatabase.movielibrary.view.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.allmoviedatabase.movielibrary.R
 import com.allmoviedatabase.movielibrary.adapter.MovieAdapter
 import com.allmoviedatabase.movielibrary.databinding.FragmentMovieListBinding
 import com.allmoviedatabase.movielibrary.util.MovieCategory
+import com.allmoviedatabase.movielibrary.util.onItemClickListener
 import com.allmoviedatabase.movielibrary.viewmodel.MovieViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MovieListFragment : Fragment() {
+class MovieListFragment : Fragment(), onItemClickListener {
 
     private var _binding: FragmentMovieListBinding? = null
     private val binding get() = _binding!!
@@ -26,15 +27,10 @@ class MovieListFragment : Fragment() {
 
     private val viewModel: MovieViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentMovieListBinding.inflate(inflater, container, false)
         setupUI()
         setupListeners()
@@ -44,7 +40,7 @@ class MovieListFragment : Fragment() {
 
     private fun setupUI() {
         binding.apply {
-            movieAdapter = MovieAdapter()
+            movieAdapter = MovieAdapter(this@MovieListFragment)
             movieListRecyclerView.layoutManager =
                 GridLayoutManager(context, 2, RecyclerView.VERTICAL, false)
             movieListRecyclerView.adapter = movieAdapter
@@ -52,13 +48,13 @@ class MovieListFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        // ViewModel'deki LiveData'ları gözlemle
-        // Bu örnekte sadece popularMovies LiveData'sını gözlemledim.
         viewModel.popularMovies.observe(viewLifecycleOwner) { movies ->
-            movieAdapter.updateList(movies)
+            // updateList yerine submitList kullanıyoruz.
+            // ListAdapter farkları hesaplayıp listeyi verimli bir şekilde güncelleyecektir.
+            movieAdapter.submitList(movies)
             binding.movieListRecyclerView.scrollToPosition(0)
         }
-        //Mevcut sayfa ve toplam sayfa sayısını gözlemle
+
         viewModel.currentPage.observe(viewLifecycleOwner) { page ->
             binding.buttonPrevious.isEnabled = page > 1
             updatePageInfoText()
@@ -73,14 +69,13 @@ class MovieListFragment : Fragment() {
         }
 
         viewModel.error.observe(viewLifecycleOwner) { error ->
-
+            // Hata durumunda kullanıcıya bilgi vermek için bir UI elemanı eklenebilir.
         }
     }
 
     private fun setupClickListeners() {
 
-        binding.searchRadioGroup.setOnCheckedChangeListener { group, checkedId ->
-            // Hangi RadioButton'ın seçildiğini ID'sine göre kontrol et
+        binding.searchRadioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.popularMovieRadioButton -> viewModel.loadMoviesCategory(MovieCategory.POPULAR)
                 R.id.bestMovieRadioButton -> viewModel.loadMoviesCategory(MovieCategory.TOP_RATED)
@@ -89,7 +84,6 @@ class MovieListFragment : Fragment() {
             }
         }
 
-        // Buton tıklamalarını ViewModel'daki fonksiyonlara yönlendir
         binding.buttonNext.setOnClickListener {
             viewModel.nextPage()
         }
@@ -109,5 +103,9 @@ class MovieListFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-}
 
+    override fun omItemClick(id: Int) {
+        val action = MovieListFragmentDirections.actionMovieListFragmentToDetailMovieFragment(id)
+        view?.findNavController()?.navigate(action)
+    }
+}
