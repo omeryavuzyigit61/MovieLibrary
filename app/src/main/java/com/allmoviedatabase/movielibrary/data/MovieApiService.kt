@@ -1,6 +1,7 @@
 package com.allmoviedatabase.movielibrary.data
 
 import com.allmoviedatabase.movielibrary.model.BaseMovie
+import com.allmoviedatabase.movielibrary.model.Credits.CreditsResponse
 import com.allmoviedatabase.movielibrary.model.Detail.MovieDetail
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.GET
@@ -37,5 +38,18 @@ interface MovieApiService {
         @Path("movie_id") movieId: Int,
         @Query("language") language: String
     ):Single<MovieDetail>
+
+    @GET("movie/{movie_id}/credits")
+    fun getMovieCredits(
+        @Path("movie_id") movieId: Int,
+        @Query("language") language: String
+    ): Single<CreditsResponse>
+
+    @GET("movie/{movie_id}/recommendations")
+    fun getMovieRecommendations(
+        @Path("movie_id") movieId: Int,
+        @Query("language") language: String,
+        @Query("page") page: Int = 1
+    ): Single<com.allmoviedatabase.movielibrary.model.Recommendations.BaseMovie> //
 
 }

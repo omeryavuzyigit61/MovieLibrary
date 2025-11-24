@@ -4,7 +4,9 @@ import androidx.fragment.app.add
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.allmoviedatabase.movielibrary.model.Credits.CreditsResponse
 import com.allmoviedatabase.movielibrary.model.Detail.MovieDetail
+import com.allmoviedatabase.movielibrary.model.Recommendations.Movie
 import com.allmoviedatabase.movielibrary.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -42,6 +44,38 @@ class MovieDetailViewModel@Inject constructor(private val movieRepository: Movie
                     // Hata olursa
                     _error.value = throwable.localizedMessage
                     _isLoading.value = false
+                })
+        )
+    }
+
+    private val _movieCredits = MutableLiveData<CreditsResponse>()
+    val movieCredits: LiveData<CreditsResponse> = _movieCredits
+
+    fun loadMovieCredits(movieId: Int) {
+        compositeDisposable.add(
+            movieRepository.fetchMovieCredits(movieId, "tr-TR") // Repository'e bu fonksiyonu ekleyeceğiz
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ credits ->
+                    _movieCredits.value = credits
+                }, { throwable ->
+                    _error.value = "Oyuncu listesi yüklenemedi: ${throwable.localizedMessage}"
+                })
+        )
+    }
+
+    private val _movieRecommendations = MutableLiveData<List<Movie>>()
+    val movieRecommendations: LiveData<List<Movie>> = _movieRecommendations
+
+    fun loadMovieRecommendations(movieId: Int) {
+        compositeDisposable.add(
+            movieRepository.fetchMovieRecommendations(movieId, "tr-TR")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ response ->
+                    _movieRecommendations.value = response.results ?: emptyList()
+                }, { throwable ->
+                    _error.value = "Öneriler yüklenemedi: ${throwable.localizedMessage}"
                 })
         )
     }

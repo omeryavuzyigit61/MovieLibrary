@@ -133,6 +133,7 @@
         app:layout_constraintTop_toBottomOf="@+id/genreTextView" />
 
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="0dp"
         android:layout_height="120dp"
         android:layout_marginTop="5dp"
@@ -149,6 +150,19 @@
             android:textColor="@color/black" />
     </ScrollView>
 
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/castRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView2"
+        tools:listitem="@layout/item_cast_member" />
+
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
@@ -159,5 +173,20 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/tagLineTextView"
         app:layout_constraintTop_toBottomOf="@+id/tagLineTextView" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recommendationsRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:clipToPadding="false"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/castRecyclerView"
+        tools:listitem="@layout/item_recommendation_movie" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

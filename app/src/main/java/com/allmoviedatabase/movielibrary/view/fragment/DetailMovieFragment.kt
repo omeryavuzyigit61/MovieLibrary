@@ -9,6 +9,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.allmoviedatabase.movielibrary.adapter.CastAdapter
+import com.allmoviedatabase.movielibrary.adapter.RecommendationAdapter
 import com.allmoviedatabase.movielibrary.databinding.FragmentDetailMovieBinding
 import com.allmoviedatabase.movielibrary.model.Detail.MovieDetail
 import com.allmoviedatabase.movielibrary.viewmodel.MovieDetailViewModel
@@ -27,6 +30,9 @@ class DetailMovieFragment : Fragment() {
     private val args: DetailMovieFragmentArgs by navArgs()
     private val viewModel: MovieDetailViewModel by viewModels()
 
+    private lateinit var castAdapter: CastAdapter
+    private lateinit var recommendationAdapter: RecommendationAdapter
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,9 +41,36 @@ class DetailMovieFragment : Fragment() {
         _binding = FragmentDetailMovieBinding.inflate(inflater, container, false)
         val movieId = args.movieId
         viewModel.loadMovieDetails(movieId)
+        viewModel.loadMovieCredits(movieId)
+        viewModel.loadMovieRecommendations(movieId)
+        setupCastRecyclerView()
+        setupRecommendationsRecyclerView()
         setupObservers()
         setupUI()
         return binding.root
+    }
+
+    private fun setupRecommendationsRecyclerView() {
+        recommendationAdapter = RecommendationAdapter { movieId ->
+            /*val action = DetailMovieFragmentDirections.actionDetailMovieFragmentSelf(movieId)
+            findNavController().navigate(action) */
+        }
+        binding.recommendationsRecyclerView.apply {
+            adapter = recommendationAdapter
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false) }
+    }
+
+    private fun setupCastRecyclerView() {
+        castAdapter = CastAdapter {
+            // "Daha Fazla Göster" tıklandığında yapılacak işlem
+           /* val action = DetailMovieFragmentDirections.actionDetailMovieFragmentToFullCastFragment(args.movieId)
+            findNavController().navigate(action)*/
+        }
+        binding.castRecyclerView.apply {
+            adapter = castAdapter
+            layoutManager = LinearLayoutManager(context,
+                LinearLayoutManager.HORIZONTAL, false)
+        }
     }
 
     private fun setupObservers() {
@@ -50,6 +83,14 @@ class DetailMovieFragment : Fragment() {
 
         viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
             //Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+        }
+        viewModel.movieCredits.observe(viewLifecycleOwner) { credits ->
+            credits.cast.let { castList ->
+                castAdapter.submitList(castList)
+            }
+        }
+        viewModel.movieRecommendations.observe(viewLifecycleOwner) { movies ->
+            recommendationAdapter.submitList(movies)
         }
     }
 
