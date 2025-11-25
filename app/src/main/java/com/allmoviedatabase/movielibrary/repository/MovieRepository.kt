@@ -24,4 +24,7 @@ class MovieRepository @Inject constructor(private val movieApiService: MovieApiS
 
     fun fetchMovieCredits(movieId: Int, language: String) =
         movieApiService.getMovieCredits(movieId, language)
+
+    fun fetchMovieReleaseDates(movieId: Int) =
+        movieApiService.getMovieReleaseDates(movieId)
 }

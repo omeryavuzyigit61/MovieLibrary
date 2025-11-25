@@ -1,192 +1,333 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.fragment.DetailMovieFragment">
 
-    <ImageView
-        android:id="@+id/abuzittinImageView"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@tools:sample/avatars" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <View
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/circle_background"
-        app:layout_constraintBottom_toBottomOf="@+id/ratingProgressIndıcator"
-        app:layout_constraintTop_toTopOf="@+id/ratingProgressIndıcator"
-        app:layout_constraintEnd_toEndOf="@+id/ratingProgressIndıcator"
-        app:layout_constraintStart_toStartOf="@+id/ratingProgressIndıcator" />
+        <ImageView
+            android:id="@+id/abuzittinImageView"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/avatars" />
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/ratingProgressIndıcator"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginStart="8dp"
-        android:indeterminate="false"
-        app:indicatorSize="45dp"
-        app:layout_constraintBottom_toBottomOf="@+id/abuzittinImageView"
-        app:layout_constraintStart_toStartOf="@+id/abuzittinImageView"
-        app:layout_constraintTop_toBottomOf="@+id/abuzittinImageView"
-        app:trackColor="@color/rating_color"
-        app:trackThickness="6dp" />
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/circle_background"
+            app:layout_constraintBottom_toBottomOf="@+id/ratingProgressIndıcator"
+            app:layout_constraintTop_toTopOf="@+id/ratingProgressIndıcator"
+            app:layout_constraintEnd_toEndOf="@+id/ratingProgressIndıcator"
+            app:layout_constraintStart_toStartOf="@+id/ratingProgressIndıcator" />
 
-    <TextView
-        android:id="@+id/ratingTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="12sp"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/transparent"
-        app:layout_constraintBottom_toBottomOf="@+id/ratingProgressIndıcator"
-        app:layout_constraintEnd_toEndOf="@+id/ratingProgressIndıcator"
-        app:layout_constraintStart_toStartOf="@+id/ratingProgressIndıcator"
-        app:layout_constraintTop_toTopOf="@+id/ratingProgressIndıcator" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/abuzittinImageView"
-        app:layout_constraintTop_toTopOf="@+id/abuzittinImageView">
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/ratingProgressIndıcator"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="8dp"
+            android:indeterminate="false"
+            app:indicatorSize="45dp"
+            app:layout_constraintBottom_toBottomOf="@+id/abuzittinImageView"
+            app:layout_constraintStart_toStartOf="@+id/abuzittinImageView"
+            app:layout_constraintTop_toBottomOf="@+id/abuzittinImageView"
+            app:trackColor="@color/rating_color"
+            app:trackThickness="6dp" />
 
         <TextView
-            android:id="@+id/titleTextView"
+            android:id="@+id/ratingTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/transparent"
+            app:layout_constraintBottom_toBottomOf="@+id/ratingProgressIndıcator"
+            app:layout_constraintEnd_toEndOf="@+id/ratingProgressIndıcator"
+            app:layout_constraintStart_toStartOf="@+id/ratingProgressIndıcator"
+            app:layout_constraintTop_toTopOf="@+id/ratingProgressIndıcator" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/abuzittinImageView"
+            app:layout_constraintTop_toTopOf="@+id/abuzittinImageView">
+
+            <TextView
+                android:id="@+id/titleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/shortDateTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:textSize="16sp"
+                android:text="TextView" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/abuzittinImageView"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+            <TextView
+                android:id="@+id/dateTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:layout_weight="1"
+                />
+
+            <TextView
+                android:id="@+id/lenghtTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:layout_weight="1"
+                />
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/shortDateTextView"
+            android:id="@+id/genreTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="@+id/linearLayout"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+        <TextView
+            android:id="@+id/tagLineTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="16dp"
+            android:text="TextView"
+            android:textStyle="italic"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/genreTextView"
+            app:layout_constraintTop_toBottomOf="@+id/genreTextView" />
+
+        <ScrollView
+            android:id="@+id/scrollView2"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            android:layout_marginTop="5dp"
+            app:layout_constraintEnd_toEndOf="@+id/tagLineTextView"
+            app:layout_constraintHorizontal_bias="0.652"
+            app:layout_constraintStart_toStartOf="@+id/genreTextView"
+            app:layout_constraintTop_toBottomOf="@+id/textView2">
+
+            <TextView
+                android:id="@+id/descriptionTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textColor="@color/black" />
+        </ScrollView>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/castRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView"
+            tools:listitem="@layout/item_cast_member" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/summary"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/tagLineTextView"
+            app:layout_constraintTop_toBottomOf="@+id/tagLineTextView" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recommendationsRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView3"
+            tools:listitem="@layout/item_recommendation_movie" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="Öne Çıkan Oyuncular"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="Ayrıca Önerilenler"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/castRecyclerView" />
+
+        <TextView
+            android:id="@+id/ageRatingTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:textSize="16sp"
-            android:text="TextView" />
+            android:text="TextView"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/genreTextView"
+            app:layout_constraintTop_toTopOf="@+id/genreTextView" />
 
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/abuzittinImageView"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
-
-        <TextView
-            android:id="@+id/dateTextView"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/movieInfoLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="TextView"
-            android:layout_weight="1"
-            />
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:padding="16dp"
+            android:background="@drawable/info_box_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recommendationsRecyclerView">
 
-        <TextView
-            android:id="@+id/lenghtTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            android:layout_weight="1"
-            />
+            <TextView
+                android:id="@+id/originalTitleLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Orijinal Başlık:"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/originalTitleTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:gravity="end"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/originalTitleLabel"
+                app:layout_constraintBaseline_toBaselineOf="@+id/originalTitleLabel"
+                tools:text="The Shawshank Redemption" />
 
-    <TextView
-        android:id="@+id/genreTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_weight="1"
-        android:text="TextView"
-        android:textColor="@color/black"
-        app:layout_constraintStart_toStartOf="@+id/linearLayout"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+            <!-- Orijinal Dil -->
+            <TextView
+                android:id="@+id/originalLanguageLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Orijinal Dil:"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/originalTitleLabel" />
 
-    <TextView
-        android:id="@+id/tagLineTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="16dp"
-        android:text="TextView"
-        android:textStyle="italic"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/genreTextView"
-        app:layout_constraintTop_toBottomOf="@+id/genreTextView" />
+            <TextView
+                android:id="@+id/originalLanguageTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:gravity="end"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/originalLanguageLabel"
+                app:layout_constraintBaseline_toBaselineOf="@+id/originalLanguageLabel"
+                tools:text="English" />
 
-    <ScrollView
-        android:id="@+id/scrollView2"
-        android:layout_width="0dp"
-        android:layout_height="120dp"
-        android:layout_marginTop="5dp"
-        app:layout_constraintEnd_toEndOf="@+id/tagLineTextView"
-        app:layout_constraintHorizontal_bias="0.652"
-        app:layout_constraintStart_toStartOf="@+id/genreTextView"
-        app:layout_constraintTop_toBottomOf="@+id/textView2">
+            <!-- Bütçe -->
+            <TextView
+                android:id="@+id/budgetLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Bütçe:"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/originalLanguageLabel" />
 
-        <TextView
-            android:id="@+id/descriptionTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            android:textColor="@color/black" />
-    </ScrollView>
+            <TextView
+                android:id="@+id/budgetTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:gravity="end"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/budgetLabel"
+                app:layout_constraintBaseline_toBaselineOf="@+id/budgetLabel"
+                tools:text="$25,000,000.00" />
+
+            <!-- Kazanç -->
+            <TextView
+                android:id="@+id/revenueLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Kazanç:"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/budgetLabel" />
+
+            <TextView
+                android:id="@+id/revenueTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:gravity="end"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/revenueLabel"
+                app:layout_constraintBaseline_toBaselineOf="@+id/revenueLabel"
+                tools:text="$28,341,469.00" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/castRecyclerView"
-        android:layout_width="0dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView2"
-        tools:listitem="@layout/item_cast_member" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="@string/summary"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/tagLineTextView"
-        app:layout_constraintTop_toBottomOf="@+id/tagLineTextView" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recommendationsRecyclerView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:clipToPadding="false"
-        android:orientation="horizontal"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/castRecyclerView"
-        tools:listitem="@layout/item_recommendation_movie" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

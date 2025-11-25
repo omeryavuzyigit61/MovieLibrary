@@ -1,5 +1,6 @@
 package com.allmoviedatabase.movielibrary.data
 
+import com.allmoviedatabase.movielibrary.model.Adult.ReleaseDatesResponse
 import com.allmoviedatabase.movielibrary.model.BaseMovie
 import com.allmoviedatabase.movielibrary.model.Credits.CreditsResponse
 import com.allmoviedatabase.movielibrary.model.Detail.MovieDetail
@@ -51,5 +52,10 @@ interface MovieApiService {
         @Query("language") language: String,
         @Query("page") page: Int = 1
     ): Single<com.allmoviedatabase.movielibrary.model.Recommendations.BaseMovie> //
+
+    @GET("movie/{movie_id}/release_dates")
+    fun getMovieReleaseDates(
+        @Path("movie_id") movieId: Int
+    ): Single<ReleaseDatesResponse>
 
 }

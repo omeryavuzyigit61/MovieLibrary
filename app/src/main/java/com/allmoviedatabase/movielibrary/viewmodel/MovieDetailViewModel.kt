@@ -80,6 +80,32 @@ class MovieDetailViewModel@Inject constructor(private val movieRepository: Movie
         )
     }
 
+    private val _ageRating = MutableLiveData<String?>()
+    val ageRating: LiveData<String?> = _ageRating
+
+    fun loadMovieReleaseDates(movieId: Int) {
+        compositeDisposable.add(
+            movieRepository.fetchMovieReleaseDates(movieId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ response ->
+                    // Yanıttan Türkiye'nin yaş sınırlandırmasını bul
+                    val turkeyReleaseInfo = response.results?.find { it.countryCode == "TR" }
+
+                    // Türkiye için olan sertifikalardan boş olmayan ilkini al
+                    val rating = turkeyReleaseInfo?.releaseDates
+                        ?.mapNotNull { it.certification }
+                        ?.firstOrNull { it.isNotBlank() }
+
+                    _ageRating.value = rating
+                }, { throwable ->
+                    // Hata olursa loglayabiliriz ama UI'da göstermeye gerek yok
+                    // çünkü bu kritik bir bilgi değil.
+                    _ageRating.value = null
+                })
+        )
+    }
+
     // ViewModel temizlendiğinde (yok olduğunda) abonelikleri iptal et
     override fun onCleared() {
         super.onCleared()

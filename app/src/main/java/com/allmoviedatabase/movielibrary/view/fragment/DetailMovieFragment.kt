@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.allmoviedatabase.movielibrary.adapter.CastAdapter
@@ -18,6 +19,8 @@ import com.allmoviedatabase.movielibrary.viewmodel.MovieDetailViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.NumberFormat
+import java.util.Locale
 import kotlin.getValue
 
 
@@ -40,9 +43,12 @@ class DetailMovieFragment : Fragment() {
     ): View {
         _binding = FragmentDetailMovieBinding.inflate(inflater, container, false)
         val movieId = args.movieId
+
         viewModel.loadMovieDetails(movieId)
         viewModel.loadMovieCredits(movieId)
         viewModel.loadMovieRecommendations(movieId)
+        viewModel.loadMovieReleaseDates(movieId)
+
         setupCastRecyclerView()
         setupRecommendationsRecyclerView()
         setupObservers()
@@ -52,24 +58,27 @@ class DetailMovieFragment : Fragment() {
 
     private fun setupRecommendationsRecyclerView() {
         recommendationAdapter = RecommendationAdapter { movieId ->
-            /*val action = DetailMovieFragmentDirections.actionDetailMovieFragmentSelf(movieId)
-            findNavController().navigate(action) */
+            val action = DetailMovieFragmentDirections.actionDetailMovieFragmentSelf(movieId)
+            findNavController().navigate(action)
         }
         binding.recommendationsRecyclerView.apply {
             adapter = recommendationAdapter
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false) }
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        }
     }
 
     private fun setupCastRecyclerView() {
         castAdapter = CastAdapter {
             // "Daha Fazla Göster" tıklandığında yapılacak işlem
-           /* val action = DetailMovieFragmentDirections.actionDetailMovieFragmentToFullCastFragment(args.movieId)
-            findNavController().navigate(action)*/
+             val action = DetailMovieFragmentDirections.actionDetailMovieFragmentToFullCastFragment(args.movieId)
+            findNavController().navigate(action)
         }
         binding.castRecyclerView.apply {
             adapter = castAdapter
-            layoutManager = LinearLayoutManager(context,
-                LinearLayoutManager.HORIZONTAL, false)
+            layoutManager = LinearLayoutManager(
+                context,
+                LinearLayoutManager.HORIZONTAL, false
+            )
         }
     }
 
@@ -91,6 +100,15 @@ class DetailMovieFragment : Fragment() {
         }
         viewModel.movieRecommendations.observe(viewLifecycleOwner) { movies ->
             recommendationAdapter.submitList(movies)
+        }
+
+        viewModel.ageRating.observe(viewLifecycleOwner) { rating ->
+            if (rating != null && rating.isNotBlank()) {
+                binding.ageRatingTextView.text = rating
+                binding.ageRatingTextView.visibility = View.VISIBLE
+            } else {
+                binding.ageRatingTextView.visibility = View.GONE
+            }
         }
     }
 
@@ -148,8 +166,37 @@ class DetailMovieFragment : Fragment() {
             tagLineTextView.text = movie.tagline
             descriptionTextView.text = movie.overview
 
+            // Orijinal Başlık
+            originalTitleTextView.text = movie.originalTitle ?: "-"
+
+            // Orijinal Dil
+            originalLanguageTextView.text = formatLanguage(movie.originalLanguage)
+
+            // Bütçe
+            budgetTextView.text = formatCurrency(movie.budget)
+
+            // Kazanç
+            revenueTextView.text = formatCurrency(movie.revenue)
+
         }
 
     }
 
+    private fun formatCurrency(amount: Long?): String {
+        if (amount == null || amount <= 0) { return "-" }
+        val format = NumberFormat.getCurrencyInstance(Locale.US)
+        format.maximumFractionDigits = 0
+        return format.format(amount)
+    }
+    private fun formatLanguage(code: String?): String {
+        return when(code) {
+            "en" -> "İngilizce"
+            "tr" -> "Türkçe"
+            "ja" -> "Japonca"
+            "ko" -> "Korece"
+            "it" -> "İtalyanca"
+            else -> {code?.uppercase() ?: "-"}
+        }
+    }
 }
+

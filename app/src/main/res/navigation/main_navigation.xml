@@ -25,5 +25,19 @@
         android:label="fragment_detail_movie"
         tools:layout="@layout/fragment_detail_movie" >
         <argument android:name="movieId" app:argType="integer" />
+        <action
+            android:id="@+id/action_detailMovieFragment_self"
+            app:destination="@id/detailMovieFragment" />
+        <action
+            android:id="@+id/action_detailMovieFragment_to_fullCastFragment"
+            app:destination="@id/fullCastFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/fullCastFragment"
+        android:name="com.allmoviedatabase.movielibrary.view.fragment.FullCastFragment"
+        android:label="fragment_full_cast"
+        tools:layout="@layout/fragment_full_cast" >
+        <argument android:name="movieId" app:argType="integer" />
+
     </fragment>
 </navigation>
