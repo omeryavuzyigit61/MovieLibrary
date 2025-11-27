@@ -31,6 +31,9 @@
         <action
             android:id="@+id/action_detailMovieFragment_to_fullCastFragment"
             app:destination="@id/fullCastFragment" />
+        <action
+            android:id="@+id/action_detailMovieFragment_to_personDetailFragment"
+            app:destination="@id/personDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/fullCastFragment"
@@ -39,5 +42,17 @@
         tools:layout="@layout/fragment_full_cast" >
         <argument android:name="movieId" app:argType="integer" />
 
+    </fragment>
+    <fragment
+        android:id="@+id/personDetailFragment"
+        android:name="com.allmoviedatabase.movielibrary.view.fragment.PersonDetailFragment"
+        android:label="fragment_person_detail"
+        tools:layout="@layout/fragment_person_detail" >
+        <argument
+            android:name="personId"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_personDetailFragment_to_detailMovieFragment"
+            app:destination="@id/detailMovieFragment" />
     </fragment>
 </navigation>

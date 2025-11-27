@@ -16,6 +16,7 @@ private const val VIEW_TYPE_CAST = 1
 private const val VIEW_TYPE_SHOW_MORE = 2
 
 class CastAdapter(
+    private val onCastMemberClicked: (Int) -> Unit,
     private val onShowMoreClicked: () -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -38,6 +39,11 @@ class CastAdapter(
                 .load(imageUrl)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(binding.castImageView)
+            itemView.setOnClickListener {
+                castMember.id?.let { personId ->
+                    onCastMemberClicked(personId)
+                }
+            }
         }
     }
 

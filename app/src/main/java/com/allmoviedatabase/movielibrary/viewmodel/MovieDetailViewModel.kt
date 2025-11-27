@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.allmoviedatabase.movielibrary.model.Credits.CreditsResponse
 import com.allmoviedatabase.movielibrary.model.Detail.MovieDetail
-import com.allmoviedatabase.movielibrary.model.Recommendations.Movie
+import com.allmoviedatabase.movielibrary.model.Movie
 import com.allmoviedatabase.movielibrary.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers

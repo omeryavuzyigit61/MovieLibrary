@@ -41,8 +41,8 @@ class CrewAdapter : ListAdapter<Any, RecyclerView.ViewHolder>(DiffCallback()) {
             val imageUrl = "https://image.tmdb.org/t/p/w200${crewMember.profilePath}"
             Glide.with(itemView.context)
                 .load(imageUrl)
-                .placeholder(R.drawable.search)
-                .error(R.drawable.search)
+                .placeholder(R.drawable.user)
+                .error(R.drawable.user)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(binding.profileImageView)
         }
@@ -92,25 +92,37 @@ class CrewAdapter : ListAdapter<Any, RecyclerView.ViewHolder>(DiffCallback()) {
     // Listemiz <Any> olduğu için içerik kontrolünü daha dikkatli yapmalıyız.
     class DiffCallback : DiffUtil.ItemCallback<Any>() {
         override fun areItemsTheSame(oldItem: Any, newItem: Any): Boolean {
-            return if (oldItem is CrewMember && newItem is CrewMember) {
-                oldItem.id == newItem.id && oldItem.creditId == newItem.creditId
-            } else if (oldItem is String && newItem is String) {
-                oldItem == newItem
-            } else {
-                false
+            return when (oldItem) {
+                is CrewMember if newItem is CrewMember -> {
+                    oldItem.id == newItem.id && oldItem.creditId == newItem.creditId
+                }
+
+                is String if newItem is String -> {
+                    oldItem == newItem
+                }
+
+                else -> {
+                    false
+                }
             }
         }
 
         override fun areContentsTheSame(oldItem: Any, newItem: Any): Boolean {
             // Tipleri kontrol ederek içerik karşılaştırması yap
-            return if (oldItem is CrewMember && newItem is CrewMember) {
-                // data class olduğu için '==' içerikleri karşılaştırır
-                oldItem == newItem
-            } else if (oldItem is String && newItem is String) {
-                // String'ler için '==' içerikleri karşılaştırır
-                oldItem == newItem
-            } else {
-                false
+            return when (oldItem) {
+                is CrewMember if newItem is CrewMember -> {
+                    // data class olduğu için '==' içerikleri karşılaştırır
+                    oldItem == newItem
+                }
+
+                is String if newItem is String -> {
+                    // String'ler için '==' içerikleri karşılaştırır
+                    oldItem == newItem
+                }
+
+                else -> {
+                    false
+                }
             }
         }
     }

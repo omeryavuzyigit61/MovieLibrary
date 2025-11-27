@@ -68,11 +68,20 @@ class DetailMovieFragment : Fragment() {
     }
 
     private fun setupCastRecyclerView() {
-        castAdapter = CastAdapter {
-            // "Daha Fazla Göster" tıklandığında yapılacak işlem
-             val action = DetailMovieFragmentDirections.actionDetailMovieFragmentToFullCastFragment(args.movieId)
-            findNavController().navigate(action)
-        }
+        castAdapter = CastAdapter(
+            // 1. Parametre: onCastMemberClicked
+            onCastMemberClicked = { personId ->
+                // Bir oyuncuya tıklandığında PersonDetailFragment'a git
+                val action = DetailMovieFragmentDirections.actionDetailMovieFragmentToPersonDetailFragment(personId)
+                findNavController().navigate(action)
+            },
+            // 2. Parametre: onShowMoreClicked
+            onShowMoreClicked = {
+                // "Daha Fazla Göster" tıklandığında FullCastFragment'a git
+                val action = DetailMovieFragmentDirections.actionDetailMovieFragmentToFullCastFragment(args.movieId)
+                findNavController().navigate(action)
+            }
+        )
         binding.castRecyclerView.apply {
             adapter = castAdapter
             layoutManager = LinearLayoutManager(

@@ -1,5 +1,6 @@
 package com.allmoviedatabase.movielibrary.model.Recommendations
 
+import com.allmoviedatabase.movielibrary.model.Movie
 import com.google.gson.annotations.SerializedName
 
 data class BaseMovie(

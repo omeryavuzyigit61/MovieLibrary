@@ -23,8 +23,8 @@ class FullCastAdapter : ListAdapter<CastMember, FullCastAdapter.ViewHolder>(Diff
             val imageUrl = "https://image.tmdb.org/t/p/w200${castMember.profilePath}"
             Glide.with(itemView.context)
                 .load(imageUrl)
-                .placeholder(R.drawable.search) // Yüklenirken gösterilecek resim
-                .error(R.drawable.search)       // Hata durumunda gösterilecek resim
+                .placeholder(R.drawable.user) // Yüklenirken gösterilecek resim
+                .error(R.drawable.user)       // Hata durumunda gösterilecek resim
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(binding.profileImageView)
         }

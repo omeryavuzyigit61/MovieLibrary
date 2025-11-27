@@ -4,6 +4,8 @@ import com.allmoviedatabase.movielibrary.model.Adult.ReleaseDatesResponse
 import com.allmoviedatabase.movielibrary.model.BaseMovie
 import com.allmoviedatabase.movielibrary.model.Credits.CreditsResponse
 import com.allmoviedatabase.movielibrary.model.Detail.MovieDetail
+import com.allmoviedatabase.movielibrary.model.PersonDetail.PersonDetail
+import com.allmoviedatabase.movielibrary.model.PersonDetail.PersonMovieCredits
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -57,5 +59,17 @@ interface MovieApiService {
     fun getMovieReleaseDates(
         @Path("movie_id") movieId: Int
     ): Single<ReleaseDatesResponse>
+
+    @GET("person/{person_id}")
+    fun getPersonDetails(
+        @Path("person_id") personId: Int,
+        @Query("language") language: String
+    ): Single<PersonDetail>
+
+    @GET("person/{person_id}/movie_credits")
+    fun getPersonMovieCredits(
+        @Path("person_id") personId: Int,
+        @Query("language") language: String
+    ): Single<PersonMovieCredits>
 
 }
