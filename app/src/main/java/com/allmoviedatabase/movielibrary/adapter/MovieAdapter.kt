@@ -38,8 +38,8 @@ class MovieAdapter(private val listener: onItemClickListener) :
             // `let` kullanarak rating null değilse UI güncellemesi yap
             rating?.let {
                 ratingTextView.text = "${it.toInt()}%"
-                ratingProgressIndCator.setProgress(it.toInt(), true)
-                ratingProgressIndCator.setIndicatorColor(color)
+                ratingProgressIndicator.setProgress(it.toInt(), true)
+                ratingProgressIndicator.setIndicatorColor(color)
             }
 
             dateMovieTextView.text = currentItem.releaseDate

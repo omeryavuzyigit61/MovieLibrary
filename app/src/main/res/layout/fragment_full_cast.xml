@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:weightSum="2"
-    tools:context=".view.fragment.FullCastFragment"><!-- Sol Sütun: Oyuncu Kadrosu -->
+    tools:context=".view.fragment.FullCastFragment">
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -14,6 +15,7 @@
         android:padding="8dp">
 
         <TextView
+            android:id="@+id/castHeaderTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Oyuncu Kadrosu"
@@ -28,7 +30,6 @@
 
     </LinearLayout>
 
-    <!-- Sağ Sütun: Ekip Kadrosu -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -37,6 +38,7 @@
         android:padding="8dp">
 
         <TextView
+            android:id="@+id/crewHeaderTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Ekip Kadrosu"
@@ -48,4 +50,5 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:listitem="@layout/item_crew_member"/>
-    </LinearLayout></LinearLayout>
+    </LinearLayout>
+</LinearLayout>

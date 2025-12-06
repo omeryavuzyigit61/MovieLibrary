@@ -2,11 +2,10 @@ package com.allmoviedatabase.movielibrary.view.fragment
 
 import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -21,8 +20,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.Locale
-import kotlin.getValue
-
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class DetailMovieFragment : Fragment() {
@@ -36,24 +34,31 @@ class DetailMovieFragment : Fragment() {
     private lateinit var castAdapter: CastAdapter
     private lateinit var recommendationAdapter: RecommendationAdapter
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDetailMovieBinding.inflate(inflater, container, false)
-        val movieId = args.movieId
+        return binding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Verileri Yükle
+        val movieId = args.movieId
         viewModel.loadMovieDetails(movieId)
         viewModel.loadMovieCredits(movieId)
         viewModel.loadMovieRecommendations(movieId)
         viewModel.loadMovieReleaseDates(movieId)
 
+        setupUI()
+        setupObservers()
+    }
+
+    private fun setupUI() {
         setupCastRecyclerView()
         setupRecommendationsRecyclerView()
-        setupObservers()
-        setupUI()
-        return binding.root
     }
 
     private fun setupRecommendationsRecyclerView() {
@@ -69,25 +74,23 @@ class DetailMovieFragment : Fragment() {
 
     private fun setupCastRecyclerView() {
         castAdapter = CastAdapter(
-            // 1. Parametre: onCastMemberClicked
+            isTvShow = false, // Film modu
             onCastMemberClicked = { personId ->
-                // Bir oyuncuya tıklandığında PersonDetailFragment'a git
                 val action = DetailMovieFragmentDirections.actionDetailMovieFragmentToPersonDetailFragment(personId)
                 findNavController().navigate(action)
             },
-            // 2. Parametre: onShowMoreClicked
             onShowMoreClicked = {
-                // "Daha Fazla Göster" tıklandığında FullCastFragment'a git
-                val action = DetailMovieFragmentDirections.actionDetailMovieFragmentToFullCastFragment(args.movieId)
+                val action = DetailMovieFragmentDirections.actionDetailMovieFragmentToFullCastFragment(
+                    movieId = args.movieId,
+                    mediaType = "movie"
+                )
                 findNavController().navigate(action)
             }
         )
+
         binding.castRecyclerView.apply {
             adapter = castAdapter
-            layoutManager = LinearLayoutManager(
-                context,
-                LinearLayoutManager.HORIZONTAL, false
-            )
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         }
     }
 
@@ -95,73 +98,56 @@ class DetailMovieFragment : Fragment() {
         viewModel.movieDetail.observe(viewLifecycleOwner) { movie ->
             bindMovieDetails(movie)
         }
-        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            //binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+
+        viewModel.movieCredits.observe(viewLifecycleOwner) { credits ->
+            castAdapter.submitList(credits.cast)
         }
 
-        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
-            //Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
-        }
-        viewModel.movieCredits.observe(viewLifecycleOwner) { credits ->
-            credits.cast.let { castList ->
-                castAdapter.submitList(castList)
-            }
-        }
         viewModel.movieRecommendations.observe(viewLifecycleOwner) { movies ->
             recommendationAdapter.submitList(movies)
         }
 
         viewModel.ageRating.observe(viewLifecycleOwner) { rating ->
-            if (rating != null && rating.isNotBlank()) {
+            if (!rating.isNullOrBlank()) {
                 binding.ageRatingTextView.text = rating
                 binding.ageRatingTextView.visibility = View.VISIBLE
             } else {
                 binding.ageRatingTextView.visibility = View.GONE
             }
         }
+
+        // isLoading ve error observer'ları buraya eklenebilir
     }
 
-    private fun setupUI() {
-
-    }
-
-    private fun DetailMovieFragment.bindMovieDetails(movie: MovieDetail) {
-
+    private fun bindMovieDetails(movie: MovieDetail) {
         binding.apply {
             Glide.with(this@DetailMovieFragment)
                 .load("https://media.themoviedb.org/t/p/w220_and_h330_face" + movie.posterPath)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .fitCenter()
-                .into(abuzittinImageView)
+                .into(abuzittinImageView) // ID'niz bu şekilde kalmış :)
 
             val fullDate = movie.releaseDate
-            val date = fullDate?.substring(0, 4)
+            val date = fullDate?.take(4) ?: ""
             val genreList = movie.genres ?: emptyList()
             val genreText = genreList.joinToString(", ") { it.name ?: "" }
-            val totalMinutes = movie.runtime ?: 0 // Null ise 0 kabul et
+            val totalMinutes = movie.runtime ?: 0
 
             if (totalMinutes > 0) {
                 val hours = totalMinutes / 60
                 val minutes = totalMinutes % 60
-
-                // Saat ve dakika bilgisini birleştirerek TextView'a ata
                 lenghtTextView.text = "${hours}s ${minutes}dk"
             } else {
-                // Eğer süre bilgisi yoksa veya 0 ise TextView'ı gizle veya varsayılan metin göster
                 lenghtTextView.text = "Süre bilinmiyor"
-                // Veya: lenghtTextView.visibility = View.GONE
             }
 
             val rating = movie.voteAverage?.times(10)
-
-            // Güvenli null kontrolü ve renk ataması
             val color = when {
                 rating != null && rating < 40 -> Color.RED
                 rating != null && rating < 70 -> Color.YELLOW
                 else -> Color.GREEN
             }
 
-            // `let` kullanarak rating null değilse UI güncellemesi yap
             rating?.let {
                 ratingTextView.text = "${it.toInt()}%"
                 ratingProgressIndCator.setProgress(it.toInt(), true)
@@ -174,21 +160,11 @@ class DetailMovieFragment : Fragment() {
             genreTextView.text = genreText
             tagLineTextView.text = movie.tagline
             descriptionTextView.text = movie.overview
-
-            // Orijinal Başlık
             originalTitleTextView.text = movie.originalTitle ?: "-"
-
-            // Orijinal Dil
             originalLanguageTextView.text = formatLanguage(movie.originalLanguage)
-
-            // Bütçe
             budgetTextView.text = formatCurrency(movie.budget)
-
-            // Kazanç
             revenueTextView.text = formatCurrency(movie.revenue)
-
         }
-
     }
 
     private fun formatCurrency(amount: Long?): String {
@@ -197,15 +173,20 @@ class DetailMovieFragment : Fragment() {
         format.maximumFractionDigits = 0
         return format.format(amount)
     }
+
     private fun formatLanguage(code: String?): String {
-        return when(code) {
+        return when (code) {
             "en" -> "İngilizce"
             "tr" -> "Türkçe"
             "ja" -> "Japonca"
             "ko" -> "Korece"
             "it" -> "İtalyanca"
-            else -> {code?.uppercase() ?: "-"}
+            else -> code?.uppercase() ?: "-"
         }
     }
-}
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}

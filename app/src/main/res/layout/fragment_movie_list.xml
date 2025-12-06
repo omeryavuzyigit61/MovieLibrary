@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/BackgroundScreen"
@@ -22,88 +23,237 @@
         android:hint="Film Ara"
         android:inputType="text"
         android:paddingStart="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/searchButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <RadioGroup
-        android:id="@+id/searchRadioGroup"
+    <HorizontalScrollView
+        android:id="@+id/searchFilterContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:scrollbars="none"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:checkedButton="@id/popularMovieRadioButton"
-        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/searchEditText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/searchChipGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleLine="true"
+            app:singleSelection="true"
+            app:chipSpacingHorizontal="8dp"
+            android:paddingHorizontal="16dp">
+
+            <com.google.android.material.chip.Chip
+                style="@style/MyCustomChipStyle"
+                android:id="@+id/chipSearchMulti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hepsi"
+                android:checked="true"/>
+
+            <com.google.android.material.chip.Chip
+                style="@style/MyCustomChipStyle"
+                android:id="@+id/chipSearchMovie"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Filmler"/>
+
+            <com.google.android.material.chip.Chip
+                style="@style/MyCustomChipStyle"
+                android:id="@+id/chipSearchTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Diziler"/>
+
+            <com.google.android.material.chip.Chip
+                style="@style/MyCustomChipStyle"
+                android:id="@+id/chipSearchPerson"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kişiler"/>
+
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/mainCategoryChipGroup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingHorizontal="16dp"
+        app:chipSpacingHorizontal="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchEditText">
+        app:layout_constraintTop_toBottomOf="@+id/searchFilterContainer"
+        app:singleSelection="true">
 
-        <RadioButton
-            android:id="@+id/popularMovieRadioButton"
-            android:layout_width="0dp"
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipMovies"
+            style="@style/MyCustomChipStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/custom_radio_background"
-            android:button="@null"
-            android:padding="8dp"
-            android:text="Popüler"
-            android:textAlignment="center"
-            android:textColor="@color/white" />
+            android:checked="true"
+            android:text="Filmler" />
 
-        <RadioButton
-            android:id="@+id/bestMovieRadioButton"
-            android:layout_width="0dp"
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipTvShows"
+            style="@style/MyCustomChipStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/custom_radio_background"
-            android:button="@null"
-            android:padding="8dp"
-            android:text="En İyiler"
-            android:textAlignment="center"
-            android:textColor="@color/white" />
+            android:text="Diziler" />
 
-        <RadioButton
-            android:id="@+id/nowPlayingMovieRadioButton"
-            android:layout_width="0dp"
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipPeople"
+            style="@style/MyCustomChipStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/custom_radio_background"
-            android:button="@null"
-            android:padding="8dp"
-            android:text="Yayında"
-            android:textAlignment="center"
-            android:textColor="@color/white" />
+            android:text="Kişiler" />
+    </com.google.android.material.chip.ChipGroup>
 
-        <RadioButton
-            android:id="@+id/upcomingMovieRadioButton"
-            android:layout_width="0dp"
+    <FrameLayout
+        android:id="@+id/subCategoryContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/mainCategoryChipGroup"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/custom_radio_background"
-            android:button="@null"
-            android:padding="8dp"
-            android:text="Yakında"
-            android:textAlignment="center"
-            android:textColor="@color/white" />
-    </RadioGroup>
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/movieSubCategoryChipGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true"
+                app:singleSelection="true"
+                app:chipSpacingHorizontal="8dp"
+                android:paddingHorizontal="16dp"
+                android:visibility="visible">
+
+                <com.google.android.material.chip.Chip
+                    style="@style/MyCustomChipStyle"
+                    android:id="@+id/chipMoviePopular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Popüler"
+                    android:checked="true"/>
+
+                <com.google.android.material.chip.Chip
+                    style="@style/MyCustomChipStyle"
+                    android:id="@+id/chipMovieTopRated"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="En İyiler"/>
+
+                <com.google.android.material.chip.Chip
+                    style="@style/MyCustomChipStyle"
+                    android:id="@+id/chipMovieNowPlaying"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Yayında"/>
+
+                <com.google.android.material.chip.Chip
+                    style="@style/MyCustomChipStyle"
+                    android:id="@+id/chipMovieUpcoming"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Yakında"/>
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/tvSubCategoryChipGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true"
+                app:singleSelection="true"
+                app:chipSpacingHorizontal="8dp"
+                android:paddingHorizontal="16dp"
+                android:visibility="gone">
+
+                <com.google.android.material.chip.Chip
+                    style="@style/MyCustomChipStyle"
+                    android:id="@+id/chipTvPopular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Popüler"
+                    android:checked="true"/>
+
+                <com.google.android.material.chip.Chip
+                    style="@style/MyCustomChipStyle"
+                    android:id="@+id/chipTvTopRated"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="En İyiler"/>
+
+                <com.google.android.material.chip.Chip
+                    style="@style/MyCustomChipStyle"
+                    android:id="@+id/chipTvOnTheAir"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Televizyonda"/>
+
+                <com.google.android.material.chip.Chip
+                    style="@style/MyCustomChipStyle"
+                    android:id="@+id/chipTvAiringToday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Günün Programı"/>
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/peopleSubCategoryChipGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true"
+                app:singleSelection="true"
+                app:chipSpacingHorizontal="8dp"
+                android:paddingHorizontal="16dp"
+                android:visibility="gone">
+
+                <com.google.android.material.chip.Chip
+                    style="@style/MyCustomChipStyle"
+                    android:id="@+id/chipPersonPopular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Popüler Kişiler"
+                    android:checked="true"/>
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+
+    </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/movieListRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:spanCount="2"
         app:layout_constraintBottom_toTopOf="@+id/pagination_controls"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchRadioGroup"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/subCategoryContainer"
+        app:spanCount="2" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -153,4 +303,17 @@
             android:background="@color/transparent"
             android:src="@drawable/angle_small_right" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/searchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Ara"
+        app:backgroundTint="@null"
+        android:textColor="@color/black"
+        android:background="@drawable/search_background"
+        app:layout_constraintBottom_toBottomOf="@+id/searchEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/searchEditText" />
 </androidx.constraintlayout.widget.ConstraintLayout>

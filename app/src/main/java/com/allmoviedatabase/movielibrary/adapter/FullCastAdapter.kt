@@ -1,4 +1,3 @@
-// file: com/allmoviedatabase/movielibrary/adapter/FullCastAdapter.kt
 package com.allmoviedatabase.movielibrary.adapter
 
 import android.view.LayoutInflater
@@ -12,52 +11,61 @@ import com.allmoviedatabase.movielibrary.model.Credits.CastMember
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 
-class FullCastAdapter : ListAdapter<CastMember, FullCastAdapter.ViewHolder>(DiffCallback()) {
+// DÜZELTME: Constructor'a 'onPersonClick' eklendi.
+class FullCastAdapter(
+    private val isTvShow: Boolean = false,
+    private val onPersonClick: (Int) -> Unit
+) : ListAdapter<CastMember, FullCastAdapter.ViewHolder>(DiffCallback()) {
 
-    // ViewHolder sınıfı, item layout'undaki view'ları tutar
-    class ViewHolder(private val binding: ItemFullCastMemberBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(castMember: CastMember) {
+    // Inner class yaparak dıştaki 'onPersonClick'e erişmesini sağladık
+    inner class ViewHolder(private val binding: ItemFullCastMemberBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(castMember: CastMember, isTvShow: Boolean) {
             binding.actorNameTextView.text = castMember.name
-            binding.characterNameTextView.text = castMember.character
+
+            // --- KARAKTER ADINI BULMA MANTIĞI ---
+            val rawCharacterName = if (!castMember.character.isNullOrEmpty()) {
+                castMember.character
+            } else if (!castMember.roles.isNullOrEmpty()) {
+                castMember.roles[0].character
+            } else {
+                ""
+            }
+
+            // DİZİ KONTROLÜ VE FORMATLAMA
+            if (isTvShow && castMember.totalEpisodeCount != null && castMember.totalEpisodeCount > 0) {
+                binding.characterNameTextView.text = "$rawCharacterName\n(${castMember.totalEpisodeCount} Bölüm)"
+            } else {
+                binding.characterNameTextView.text = rawCharacterName
+            }
+
+            // TIKLAMA OLAYI
+            itemView.setOnClickListener {
+                castMember.id?.let { id -> onPersonClick(id) }
+            }
 
             val imageUrl = "https://image.tmdb.org/t/p/w200${castMember.profilePath}"
             Glide.with(itemView.context)
                 .load(imageUrl)
-                .placeholder(R.drawable.user) // Yüklenirken gösterilecek resim
-                .error(R.drawable.user)       // Hata durumunda gösterilecek resim
+                .placeholder(R.drawable.user)
+                .error(R.drawable.user)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(binding.profileImageView)
         }
-
-        // Bu companion object, ViewHolder oluşturmayı daha temiz hale getirir
-        companion object {
-            fun from(parent: ViewGroup): ViewHolder {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = ItemFullCastMemberBinding.inflate(layoutInflater, parent, false)
-                return ViewHolder(binding)
-            }
-        }
     }
 
-    // Yeni bir ViewHolder oluşturulduğunda çağrılır
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder.from(parent)
+        val layoutInflater = LayoutInflater.from(parent.context)
+        val binding = ItemFullCastMemberBinding.inflate(layoutInflater, parent, false)
+        return ViewHolder(binding)
     }
 
-    // ViewHolder'ı verilerle doldurmak için çağrılır
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val castMember = getItem(position)
-        holder.bind(castMember)
+        holder.bind(getItem(position), isTvShow)
     }
 
-    // ListAdapter'ın listeler arasındaki farkı verimli bir şekilde bulmasını sağlar
     class DiffCallback : DiffUtil.ItemCallback<CastMember>() {
-        override fun areItemsTheSame(oldItem: CastMember, newItem: CastMember): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: CastMember, newItem: CastMember): Boolean {
-            return oldItem == newItem
-        }
+        override fun areItemsTheSame(oldItem: CastMember, newItem: CastMember): Boolean = oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: CastMember, newItem: CastMember): Boolean = oldItem == newItem
     }
 }

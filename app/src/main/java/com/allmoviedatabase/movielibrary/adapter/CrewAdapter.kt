@@ -12,18 +12,18 @@ import com.allmoviedatabase.movielibrary.model.Credits.CrewMember
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 
-// View tiplerini ayırt etmek için sabitler
 private const val VIEW_TYPE_HEADER = 0
 private const val VIEW_TYPE_MEMBER = 1
 
-class CrewAdapter : ListAdapter<Any, RecyclerView.ViewHolder>(DiffCallback()) {
+// DÜZELTME: Constructor'a 'onPersonClick' eklendi.
+class CrewAdapter(
+    private val onPersonClick: (Int) -> Unit
+) : ListAdapter<Any, RecyclerView.ViewHolder>(DiffCallback()) {
 
-    // Kategori başlığı (Departman adı) için ViewHolder
     class HeaderViewHolder(private val binding: ItemCrewHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(department: String) {
             binding.departmentTextView.text = department
         }
-
         companion object {
             fun from(parent: ViewGroup): HeaderViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
@@ -33,11 +33,17 @@ class CrewAdapter : ListAdapter<Any, RecyclerView.ViewHolder>(DiffCallback()) {
         }
     }
 
-    // Ekip üyesi için ViewHolder
-    class MemberViewHolder(private val binding: ItemCrewMemberBinding) : RecyclerView.ViewHolder(binding.root) {
+    // Inner class yaptık ki 'onPersonClick'e erişebilsin
+    inner class MemberViewHolder(private val binding: ItemCrewMemberBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(crewMember: CrewMember) {
             binding.crewNameTextView.text = crewMember.name
             binding.jobTextView.text = crewMember.job
+
+            // TIKLAMA OLAYI
+            itemView.setOnClickListener {
+                crewMember.id?.let { id -> onPersonClick(id) }
+            }
+
             val imageUrl = "https://image.tmdb.org/t/p/w200${crewMember.profilePath}"
             Glide.with(itemView.context)
                 .load(imageUrl)
@@ -46,84 +52,45 @@ class CrewAdapter : ListAdapter<Any, RecyclerView.ViewHolder>(DiffCallback()) {
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(binding.profileImageView)
         }
-
-        companion object {
-            fun from(parent: ViewGroup): MemberViewHolder {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = ItemCrewMemberBinding.inflate(layoutInflater, parent, false)
-                return MemberViewHolder(binding)
-            }
-        }
     }
 
-    // Pozisyondaki öğenin türüne göre (String mi CrewMember mı) view tipini döndürür
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
             is String -> VIEW_TYPE_HEADER
             is CrewMember -> VIEW_TYPE_MEMBER
-            else -> throw IllegalArgumentException("Invalid type of data at position $position")
+            else -> throw IllegalArgumentException("Invalid type of data")
         }
     }
 
-    // Gelen view tipine göre uygun ViewHolder'ı oluşturur
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             VIEW_TYPE_HEADER -> HeaderViewHolder.from(parent)
-            VIEW_TYPE_MEMBER -> MemberViewHolder.from(parent)
+            VIEW_TYPE_MEMBER -> MemberViewHolder(ItemCrewMemberBinding.inflate(inflater, parent, false))
             else -> throw IllegalArgumentException("Invalid viewType: $viewType")
         }
     }
 
-    // ViewHolder'ı gelen veriyle doldurur
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is HeaderViewHolder -> {
-                val departmentName = getItem(position) as String
-                holder.bind(departmentName)
-            }
-            is MemberViewHolder -> {
-                val crewMember = getItem(position) as CrewMember
-                holder.bind(crewMember)
-            }
+            is HeaderViewHolder -> holder.bind(getItem(position) as String)
+            is MemberViewHolder -> holder.bind(getItem(position) as CrewMember)
         }
     }
 
-    // ListAdapter'ın farkları bulmasını sağlar.
-    // Listemiz <Any> olduğu için içerik kontrolünü daha dikkatli yapmalıyız.
     class DiffCallback : DiffUtil.ItemCallback<Any>() {
         override fun areItemsTheSame(oldItem: Any, newItem: Any): Boolean {
-            return when (oldItem) {
-                is CrewMember if newItem is CrewMember -> {
-                    oldItem.id == newItem.id && oldItem.creditId == newItem.creditId
-                }
-
-                is String if newItem is String -> {
-                    oldItem == newItem
-                }
-
-                else -> {
-                    false
-                }
+            return if (oldItem is CrewMember && newItem is CrewMember) {
+                oldItem.id == newItem.id && oldItem.creditId == newItem.creditId
+            } else if (oldItem is String && newItem is String) {
+                oldItem == newItem
+            } else {
+                false
             }
         }
 
         override fun areContentsTheSame(oldItem: Any, newItem: Any): Boolean {
-            // Tipleri kontrol ederek içerik karşılaştırması yap
-            return when (oldItem) {
-                is CrewMember if newItem is CrewMember -> {
-                    // data class olduğu için '==' içerikleri karşılaştırır
-                    oldItem == newItem
-                }
-
-                is String if newItem is String -> {
-                    // String'ler için '==' içerikleri karşılaştırır
-                    oldItem == newItem
-                }
-
-                else -> {
-                    false
-                }
-            }
+            return oldItem == newItem
         }
     }
 }

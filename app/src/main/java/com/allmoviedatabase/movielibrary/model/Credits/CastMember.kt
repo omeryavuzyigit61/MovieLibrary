@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class CastMember(
     @SerializedName("adult")
     val adult:
-    Boolean?,@SerializedName("gender")
+    Boolean?, @SerializedName("gender")
     val gender: Int?,
     @SerializedName("id")
     val id: Int?,
@@ -26,5 +26,9 @@ data class CastMember(
     @SerializedName("credit_id")
     val creditId: String?,
     @SerializedName("order")
-    val order: Int?
+    val order: Int?,
+    @SerializedName("total_episode_count")
+    val totalEpisodeCount: Int?,
+    @SerializedName("roles")
+    val roles: List<Role>?
 )

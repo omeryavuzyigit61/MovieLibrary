@@ -7,52 +7,105 @@
 
     <fragment
         android:id="@+id/movieListFragment"
-        android:name= "com.allmoviedatabase.movielibrary.view.fragment.MovieListFragment"
+        android:name="com.allmoviedatabase.movielibrary.view.fragment.MovieListFragment"
         android:label="fragment_movie_list"
-        tools:layout="@layout/fragment_movie_list" >
+        tools:layout="@layout/fragment_movie_list">
+
         <action
             android:id="@+id/action_movieListFragment_to_detailMovieFragment"
             app:destination="@id/detailMovieFragment" />
+
+        <action
+            android:id="@+id/action_movieListFragment_to_detailTvShowFragment"
+            app:destination="@id/detailTvShowFragment" />
+
+        <action
+            android:id="@+id/action_movieListFragment_to_personDetailFragment"
+            app:destination="@id/personDetailFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/detailMovieFragment"
+        android:name="com.allmoviedatabase.movielibrary.view.fragment.DetailMovieFragment"
+        android:label="fragment_detail_movie"
+        tools:layout="@layout/fragment_detail_movie">
+        <argument
+            android:name="movieId"
+            app:argType="integer" />
+
+        <action
+            android:id="@+id/action_detailMovieFragment_self"
+            app:destination="@id/detailMovieFragment" />
+
+        <action
+            android:id="@+id/action_detailMovieFragment_to_fullCastFragment"
+            app:destination="@id/fullCastFragment" />
+
+        <action
+            android:id="@+id/action_detailMovieFragment_to_personDetailFragment"
+            app:destination="@id/personDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailTvShowFragment"
+        android:name="com.allmoviedatabase.movielibrary.view.fragment.DetailTvShowFragment"
+        android:label="fragment_detail_tv_show"
+        tools:layout="@layout/fragment_detail_tv_show">
+        <argument
+            android:name="tvId"
+            app:argType="integer" />
+
+        <action
+            android:id="@+id/action_detailTvShowFragment_self"
+            app:destination="@id/detailTvShowFragment" />
+
+        <action
+            android:id="@+id/action_detailTvShowFragment_to_personDetailFragment"
+            app:destination="@id/personDetailFragment" />
+
+        <action
+            android:id="@+id/action_detailTvShowFragment_to_fullCastFragment"
+            app:destination="@id/fullCastFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fullCastFragment"
+        android:name="com.allmoviedatabase.movielibrary.view.fragment.FullCastFragment"
+        android:label="fragment_full_cast"
+        tools:layout="@layout/fragment_full_cast">
+
+        <argument
+            android:name="movieId"
+            app:argType="integer" />
+
+        <argument
+            android:name="mediaType"
+            app:argType="string"
+            android:defaultValue="movie" />
+
+        <action
+            android:id="@+id/action_fullCastFragment_to_personDetailFragment"
+            app:destination="@id/personDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/personDetailFragment"
+        android:name="com.allmoviedatabase.movielibrary.view.fragment.PersonDetailFragment"
+        android:label="fragment_person_detail"
+        tools:layout="@layout/fragment_person_detail">
+        <argument
+            android:name="personId"
+            app:argType="integer" />
+
+        <action
+            android:id="@+id/action_personDetailFragment_to_detailMovieFragment"
+            app:destination="@id/detailMovieFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/televisionSeriesFragment"
         android:name="com.allmoviedatabase.movielibrary.view.fragment.TelevisionSeriesFragment"
         android:label="fragment_television_series"
         tools:layout="@layout/fragment_television_series" />
-    <fragment
-        android:id="@+id/detailMovieFragment"
-        android:name="com.allmoviedatabase.movielibrary.view.fragment.DetailMovieFragment"
-        android:label="fragment_detail_movie"
-        tools:layout="@layout/fragment_detail_movie" >
-        <argument android:name="movieId" app:argType="integer" />
-        <action
-            android:id="@+id/action_detailMovieFragment_self"
-            app:destination="@id/detailMovieFragment" />
-        <action
-            android:id="@+id/action_detailMovieFragment_to_fullCastFragment"
-            app:destination="@id/fullCastFragment" />
-        <action
-            android:id="@+id/action_detailMovieFragment_to_personDetailFragment"
-            app:destination="@id/personDetailFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/fullCastFragment"
-        android:name="com.allmoviedatabase.movielibrary.view.fragment.FullCastFragment"
-        android:label="fragment_full_cast"
-        tools:layout="@layout/fragment_full_cast" >
-        <argument android:name="movieId" app:argType="integer" />
 
-    </fragment>
-    <fragment
-        android:id="@+id/personDetailFragment"
-        android:name="com.allmoviedatabase.movielibrary.view.fragment.PersonDetailFragment"
-        android:label="fragment_person_detail"
-        tools:layout="@layout/fragment_person_detail" >
-        <argument
-            android:name="personId"
-            app:argType="integer" />
-        <action
-            android:id="@+id/action_personDetailFragment_to_detailMovieFragment"
-            app:destination="@id/detailMovieFragment" />
-    </fragment>
 </navigation>
