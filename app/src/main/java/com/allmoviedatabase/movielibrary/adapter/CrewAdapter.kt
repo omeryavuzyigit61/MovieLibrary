@@ -9,6 +9,7 @@ import com.allmoviedatabase.movielibrary.R
 import com.allmoviedatabase.movielibrary.databinding.ItemCrewHeaderBinding
 import com.allmoviedatabase.movielibrary.databinding.ItemCrewMemberBinding
 import com.allmoviedatabase.movielibrary.model.Credits.CrewMember
+import com.allmoviedatabase.movielibrary.util.Constants.IMAGE_BASE_URL_2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 
@@ -44,7 +45,7 @@ class CrewAdapter(
                 crewMember.id?.let { id -> onPersonClick(id) }
             }
 
-            val imageUrl = "https://image.tmdb.org/t/p/w200${crewMember.profilePath}"
+            val imageUrl = "$IMAGE_BASE_URL_2${crewMember.profilePath}"
             Glide.with(itemView.context)
                 .load(imageUrl)
                 .placeholder(R.drawable.user)

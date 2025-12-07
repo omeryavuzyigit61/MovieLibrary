@@ -9,6 +9,7 @@ import com.allmoviedatabase.movielibrary.model.Person
 import com.allmoviedatabase.movielibrary.model.PersonDetail.PersonDetail
 import com.allmoviedatabase.movielibrary.model.PersonDetail.PersonMovieCredits
 import com.allmoviedatabase.movielibrary.model.SearchResult
+import com.allmoviedatabase.movielibrary.model.SeasonDetail.SeasonDetailResponse
 import com.allmoviedatabase.movielibrary.model.TV.TvShowDetail
 import com.allmoviedatabase.movielibrary.model.TvShow
 import io.reactivex.rxjava3.core.Single
@@ -155,5 +156,12 @@ interface MovieApiService {
         @Query("language") language: String,
         @Query("page") page: Int = 1
     ): Single<com.allmoviedatabase.movielibrary.model.BaseResponse<com.allmoviedatabase.movielibrary.model.TvShow>>
+
+    @GET("tv/{tv_id}/season/{season_number}")
+    fun getSeasonDetails(
+        @Path("tv_id") tvId: Int,
+        @Path("season_number") seasonNumber: Int,
+        @Query("language") language: String = "tr-TR"
+    ): Single<SeasonDetailResponse>
 
 }

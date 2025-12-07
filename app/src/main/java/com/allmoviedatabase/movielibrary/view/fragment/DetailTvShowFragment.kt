@@ -45,6 +45,10 @@ class DetailTvShowFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Manuel yükleme fonksiyonları SİLİNDİ.
+        // ViewModel init bloğu bunu hallediyor.
+
         setupUI()
         setupObservers()
     }
@@ -52,15 +56,23 @@ class DetailTvShowFragment : Fragment() {
     private fun setupUI() {
         setupCastRecyclerView()
 
-        // Sezonlar
-        seasonsAdapter = SeasonsAdapter()
+        // 1. SEZONLAR LİSTESİ
+        // Adapter'a tıklama fonksiyonunu (lambda) gönderiyoruz.
+        seasonsAdapter = SeasonsAdapter { seasonNumber ->
+            val action = DetailTvShowFragmentDirections.actionDetailTvShowFragmentToSeasonDetailFragment(
+                tvId = args.tvId,
+                seasonNumber = seasonNumber
+            )
+            findNavController().navigate(action)
+        }
+
         binding.seasonsRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = seasonsAdapter
             isNestedScrollingEnabled = false
         }
 
-        // Öneriler
+        // 2. ÖNERİLER LİSTESİ
         recommendationsAdapter = ContentAdapter(isHorizontal = true) { listItem ->
             if (listItem is ListItem.TvShowItem) {
                 listItem.tvShow.id?.let { id ->
@@ -154,6 +166,10 @@ class DetailTvShowFragment : Fragment() {
                 binding.recommendationsRecyclerView.visibility = View.VISIBLE
                 recommendationsAdapter.submitList(list)
             }
+        }
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            // binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
     }
 

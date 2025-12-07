@@ -20,7 +20,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.Locale
-import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class DetailMovieFragment : Fragment() {
@@ -45,12 +44,8 @@ class DetailMovieFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Verileri Yükle
-        val movieId = args.movieId
-        viewModel.loadMovieDetails(movieId)
-        viewModel.loadMovieCredits(movieId)
-        viewModel.loadMovieRecommendations(movieId)
-        viewModel.loadMovieReleaseDates(movieId)
+        // DÜZELTME: Buradaki viewModel.load... çağrılarını sildik.
+        // ViewModel zaten init bloğunda otomatik olarak verileri çekiyor.
 
         setupUI()
         setupObservers()
@@ -116,7 +111,10 @@ class DetailMovieFragment : Fragment() {
             }
         }
 
-        // isLoading ve error observer'ları buraya eklenebilir
+        // İsteğe bağlı loading göstergesi
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            // binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
     }
 
     private fun bindMovieDetails(movie: MovieDetail) {
@@ -125,7 +123,7 @@ class DetailMovieFragment : Fragment() {
                 .load("https://media.themoviedb.org/t/p/w220_and_h330_face" + movie.posterPath)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .fitCenter()
-                .into(abuzittinImageView) // ID'niz bu şekilde kalmış :)
+                .into(abuzittinImageView)
 
             val fullDate = movie.releaseDate
             val date = fullDate?.take(4) ?: ""

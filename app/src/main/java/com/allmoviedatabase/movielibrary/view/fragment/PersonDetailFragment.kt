@@ -11,7 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.allmoviedatabase.movielibrary.adapter.RecommendationAdapter
 import com.allmoviedatabase.movielibrary.databinding.FragmentPersonDetailBinding
-import com.allmoviedatabase.movielibrary.viewmodel.DisplayablePersonDetail
+import com.allmoviedatabase.movielibrary.model.DisplayablePersonDetail
 import com.allmoviedatabase.movielibrary.viewmodel.PersonDetailViewModel
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint

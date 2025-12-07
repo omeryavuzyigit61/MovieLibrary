@@ -21,6 +21,7 @@ import com.allmoviedatabase.movielibrary.viewmodel.MovieViewModel
 import com.allmoviedatabase.movielibrary.viewmodel.SearchType
 import com.allmoviedatabase.movielibrary.viewmodel.SubCategory
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.core.view.isVisible
 
 @AndroidEntryPoint
 class MovieListFragment : Fragment() {
@@ -47,7 +48,7 @@ class MovieListFragment : Fragment() {
     private fun setupBackPressHandler() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (binding.searchFilterContainer.visibility == View.VISIBLE) {
+                if (binding.searchFilterContainer.isVisible) {
                     toggleSearchMode(false)
                     binding.searchEditText.clearFocus()
                     hideKeyboard()

@@ -10,6 +10,7 @@ import com.allmoviedatabase.movielibrary.model.TV.TvShowDetail
 import com.allmoviedatabase.movielibrary.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
@@ -20,7 +21,6 @@ class DetailTvShowViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    // Navigation Argument'tan gelen ID (nav_graph'ta argument name 'tvId' olmalı)
     private val tvId = savedStateHandle.get<Int>("tvId") ?: 0
 
     private val _tvDetail = MutableLiveData<TvShowDetail>()
@@ -38,48 +38,35 @@ class DetailTvShowViewModel @Inject constructor(
     private val disposable = CompositeDisposable()
 
     init {
-        if (tvId != 0) {
-            loadAllData()
-        }
+        if (tvId != 0) loadAllData()
     }
 
     private fun loadAllData() {
         _isLoading.value = true
 
-        // 1. Dizi Detayları
+        // 3 isteği aynı anda (paralel) başlatıp sonuçları birleştiriyoruz
         disposable.add(
-            repository.fetchTvShowDetails(tvId, "tr-TR")
+            Single.zip(
+                repository.fetchTvShowDetails(tvId, "tr-TR"),
+                repository.fetchTvShowCredits(tvId, "tr-TR"),
+                repository.fetchTvShowRecommendations(tvId, "tr-TR")
+            ) { detail, credits, recs ->
+                // Sonuçları bir Triple (üçlü) nesne olarak paketle
+                Triple(detail, credits, recs)
+            }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ detail ->
+                .subscribe({ (detail, creditsResponse, recsResponse) ->
+                    // Tüm veriler başarıyla geldi
                     _tvDetail.value = detail
+                    _cast.value = creditsResponse.cast ?: emptyList()
+                    _recommendations.value = recsResponse.results?.map { ListItem.TvShowItem(it) } ?: emptyList()
                     _isLoading.value = false
-                }, {
-                    // Hata yönetimi
+                }, { error ->
+                    // Herhangi birinde hata olursa buraya düşer
                     _isLoading.value = false
+                    // Hata yönetimi (Opsiyonel: _error.value = error.message)
                 })
-        )
-
-        // 2. Oyuncular
-        disposable.add(
-            repository.fetchTvShowCredits(tvId, "tr-TR")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ response ->
-                    _cast.value = response.cast
-                }, { })
-        )
-
-        // 3. Öneriler
-        disposable.add(
-            repository.fetchTvShowRecommendations(tvId, "tr-TR")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ response ->
-                    // Gelen TvShow listesini ListItem'a çeviriyoruz
-                    val listItems = response.results?.map { ListItem.TvShowItem(it) } ?: emptyList()
-                    _recommendations.value = listItems
-                }, { })
         )
     }
 

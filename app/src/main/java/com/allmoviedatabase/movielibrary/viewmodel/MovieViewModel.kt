@@ -30,22 +30,17 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _error = MutableLiveData<String?>()
-    val error: LiveData<String?> = _error
-
     private val disposable = CompositeDisposable()
 
-    // Mevcut durumu takip etmek için değişkenler
     private var currentSubCategory: SubCategory = SubCategory.POPULAR_MOVIE
-    var currentSearchType: SearchType = SearchType.MULTI
+    private var currentSearchType: SearchType = SearchType.MULTI
     private var lastQuery: String = ""
-    var isSearchMode: Boolean = false // Arama modunda mıyız?
+    private var isSearchMode: Boolean = false
 
     init {
         loadContentForCategory(SubCategory.POPULAR_MOVIE)
     }
 
-    // --- ARAMA FONKSİYONU ---
     fun searchContent(query: String, type: SearchType, page: Int = 1) {
         lastQuery = query
         currentSearchType = type
@@ -54,34 +49,25 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
         _isLoading.value = true
         disposable.clear()
 
-        val apiCall: Single<Pair<List<ListItem>, Int?>> = when (type) {
-            SearchType.MULTI -> movieRepository.searchMulti(query, page)
-                .map { response ->
-                    val listItems = response.results?.mapNotNull { item ->
-                        when (item.mediaType) {
-                            "movie" -> ListItem.MovieItem(item.toMovie())
-                            "tv" -> ListItem.TvShowItem(item.toTvShow())
-                            "person" -> ListItem.PersonItem(item.toPerson())
-                            else -> null
-                        }
-                    } ?: emptyList()
-                    Pair(listItems, response.totalPages)
+        val apiCall = when (type) {
+            SearchType.MULTI -> movieRepository.searchMulti(query, page).map {
+                it.mapToListItem { item ->
+                    when (item.mediaType) {
+                        "movie" -> ListItem.MovieItem(item.toMovie())
+                        "tv" -> ListItem.TvShowItem(item.toTvShow())
+                        "person" -> ListItem.PersonItem(item.toPerson())
+                        else -> null
+                    }
                 }
-
-            SearchType.MOVIE -> movieRepository.searchMovie(query, page)
-                .map { Pair(it.results?.map { m -> ListItem.MovieItem(m) } ?: emptyList(), it.totalPages) }
-
-            SearchType.TV -> movieRepository.searchTv(query, page)
-                .map { Pair(it.results?.map { t -> ListItem.TvShowItem(t) } ?: emptyList(), it.totalPages) }
-
-            SearchType.PERSON -> movieRepository.searchPerson(query, page)
-                .map { Pair(it.results?.map { p -> ListItem.PersonItem(p) } ?: emptyList(), it.totalPages) }
+            }
+            SearchType.MOVIE -> movieRepository.searchMovie(query, page).map { it.mapToListItem { m -> ListItem.MovieItem(m) } }
+            SearchType.TV -> movieRepository.searchTv(query, page).map { it.mapToListItem { t -> ListItem.TvShowItem(t) } }
+            SearchType.PERSON -> movieRepository.searchPerson(query, page).map { it.mapToListItem { p -> ListItem.PersonItem(p) } }
         }
 
         executeApiCall(apiCall)
     }
 
-    // --- KATEGORİ YÜKLEME FONKSİYONU ---
     fun loadContentForCategory(subCategory: SubCategory, page: Int = 1) {
         currentSubCategory = subCategory
         isSearchMode = false
@@ -89,44 +75,36 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
         _isLoading.value = true
         disposable.clear()
 
-        val apiCall: Single<Pair<List<ListItem>, Int?>> = when (subCategory) {
-            SubCategory.POPULAR_MOVIE -> movieRepository.fetchPopularMovies(page)
-                .map { Pair(it.results?.map { m -> ListItem.MovieItem(m) } ?: emptyList(), it.totalPages) }
-            SubCategory.TOP_RATED_MOVIE -> movieRepository.fetchTopRatedMovies(page)
-                .map { Pair(it.results?.map { m -> ListItem.MovieItem(m) } ?: emptyList(), it.totalPages) }
-            SubCategory.NOW_PLAYING_MOVIE -> movieRepository.fetchNowPlayingMovies(page)
-                .map { Pair(it.results?.map { m -> ListItem.MovieItem(m) } ?: emptyList(), it.totalPages) }
-            SubCategory.UPCOMING_MOVIE -> movieRepository.fetchUpcomingMovies(page)
-                .map { Pair(it.results?.map { m -> ListItem.MovieItem(m) } ?: emptyList(), it.totalPages) }
-
-            SubCategory.POPULAR_TV -> movieRepository.fetchPopularTvShows(page)
-                .map { Pair(it.results?.map { t -> ListItem.TvShowItem(t) } ?: emptyList(), it.totalPages) }
-            SubCategory.TOP_RATED_TV -> movieRepository.fetchTopRatedTvShows(page)
-                .map { Pair(it.results?.map { t -> ListItem.TvShowItem(t) } ?: emptyList(), it.totalPages) }
-            SubCategory.ON_THE_AIR_TV -> movieRepository.fetchOnTheAirTvShows(page)
-                .map { Pair(it.results?.map { t -> ListItem.TvShowItem(t) } ?: emptyList(), it.totalPages) }
-            SubCategory.AIRING_TODAY_TV -> movieRepository.fetchAiringTodayTvShows(page)
-                .map { Pair(it.results?.map { t -> ListItem.TvShowItem(t) } ?: emptyList(), it.totalPages) }
-
-            SubCategory.POPULAR_PERSON -> movieRepository.fetchPopularPeople(page)
-                .map { Pair(it.results?.map { p -> ListItem.PersonItem(p) } ?: emptyList(), it.totalPages) }
+        val apiCall = when (subCategory) {
+            SubCategory.POPULAR_MOVIE -> movieRepository.fetchPopularMovies(page).map { it.mapToListItem { m -> ListItem.MovieItem(m) } }
+            SubCategory.TOP_RATED_MOVIE -> movieRepository.fetchTopRatedMovies(page).map { it.mapToListItem { m -> ListItem.MovieItem(m) } }
+            SubCategory.NOW_PLAYING_MOVIE -> movieRepository.fetchNowPlayingMovies(page).map { it.mapToListItem { m -> ListItem.MovieItem(m) } }
+            SubCategory.UPCOMING_MOVIE -> movieRepository.fetchUpcomingMovies(page).map { it.mapToListItem { m -> ListItem.MovieItem(m) } }
+            SubCategory.POPULAR_TV -> movieRepository.fetchPopularTvShows(page).map { it.mapToListItem { t -> ListItem.TvShowItem(t) } }
+            SubCategory.TOP_RATED_TV -> movieRepository.fetchTopRatedTvShows(page).map { it.mapToListItem { t -> ListItem.TvShowItem(t) } }
+            SubCategory.ON_THE_AIR_TV -> movieRepository.fetchOnTheAirTvShows(page).map { it.mapToListItem { t -> ListItem.TvShowItem(t) } }
+            SubCategory.AIRING_TODAY_TV -> movieRepository.fetchAiringTodayTvShows(page).map { it.mapToListItem { t -> ListItem.TvShowItem(t) } }
+            SubCategory.POPULAR_PERSON -> movieRepository.fetchPopularPeople(page).map { it.mapToListItem { p -> ListItem.PersonItem(p) } }
         }
 
         executeApiCall(apiCall)
     }
 
-    // --- ORTAK API ÇALIŞTIRMA MANTIĞI ---
+    // Helper extension to reduce boilerplate in map
+    private fun <T> com.allmoviedatabase.movielibrary.model.BaseResponse<T>.mapToListItem(mapper: (T) -> ListItem?): Pair<List<ListItem>, Int?> {
+        val list = this.results?.mapNotNull(mapper) ?: emptyList()
+        return Pair(list, this.totalPages)
+    }
+
     private fun executeApiCall(apiCall: Single<Pair<List<ListItem>, Int?>>) {
         disposable.add(
-            apiCall
-                .subscribeOn(Schedulers.io())
+            apiCall.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ (items, totalP) ->
                     _contentList.value = items
                     _totalPages.value = totalP ?: 1
                     _isLoading.value = false
-                }, { throwable ->
-                    _error.value = "Veri yüklenemedi: ${throwable.message}"
+                }, {
                     _isLoading.value = false
                 })
         )
@@ -135,22 +113,16 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
     fun nextPage() {
         val next = (_currentPage.value ?: 1) + 1
         if (next <= (_totalPages.value ?: 1)) {
-            if (isSearchMode) {
-                searchContent(lastQuery, currentSearchType, next)
-            } else {
-                loadContentForCategory(currentSubCategory, next)
-            }
+            if (isSearchMode) searchContent(lastQuery, currentSearchType, next)
+            else loadContentForCategory(currentSubCategory, next)
         }
     }
 
     fun previousPage() {
         val prev = (_currentPage.value ?: 1) - 1
         if (prev >= 1) {
-            if (isSearchMode) {
-                searchContent(lastQuery, currentSearchType, prev)
-            } else {
-                loadContentForCategory(currentSubCategory, prev)
-            }
+            if (isSearchMode) searchContent(lastQuery, currentSearchType, prev)
+            else loadContentForCategory(currentSubCategory, prev)
         }
     }
 

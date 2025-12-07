@@ -12,9 +12,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlin.math.roundToInt
 
-class SeasonsAdapter : ListAdapter<Season, SeasonsAdapter.SeasonViewHolder>(SeasonDiffCallback()) {
+// DÜZELTME: Constructor'a tıklama olayını (onSeasonClick) ekledik.
+class SeasonsAdapter(
+    private val onSeasonClick: (Int) -> Unit
+) : ListAdapter<Season, SeasonsAdapter.SeasonViewHolder>(SeasonDiffCallback()) {
 
-    class SeasonViewHolder(private val binding: ItemSeasonBinding) : RecyclerView.ViewHolder(binding.root) {
+    // Inner class yaptık ki dışarıdaki onSeasonClick'e erişebilsin
+    inner class SeasonViewHolder(private val binding: ItemSeasonBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(season: Season) {
             binding.seasonNameTextView.text = season.name
             binding.seasonOverviewTextView.text = season.overview
@@ -33,9 +37,18 @@ class SeasonsAdapter : ListAdapter<Season, SeasonsAdapter.SeasonViewHolder>(Seas
             // Poster
             Glide.with(itemView.context)
                 .load(IMAGE_BASE_URL + season.posterPath)
-                .placeholder(android.R.drawable.ic_menu_gallery) // Placeholder ekleyebilirsin
+                .placeholder(android.R.drawable.ic_menu_gallery)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(binding.seasonPosterImageView)
+
+            // TIKLAMA OLAYI
+            itemView.setOnClickListener {
+                // seasonNumber null gelebilir, kontrol edelim.
+                // Genellikle API'de 'season_number' olarak gelir.
+                season.seasonNumber?.let { num ->
+                    onSeasonClick(num)
+                }
+            }
         }
     }
 

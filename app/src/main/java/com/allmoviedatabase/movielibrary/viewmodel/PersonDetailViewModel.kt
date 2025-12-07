@@ -1,9 +1,11 @@
-// file: com/allmoviedatabase/movielibrary/viewmodel/PersonDetailViewModel.kt
 package com.allmoviedatabase.movielibrary.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import com.allmoviedatabase.movielibrary.model.DisplayablePersonDetail
 import com.allmoviedatabase.movielibrary.model.Movie
-import com.allmoviedatabase.movielibrary.model.PersonDetail.PersonDetail
 import com.allmoviedatabase.movielibrary.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -16,24 +18,14 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 
-/**
- * ViewModel'in UI'a göndereceği veriyi temsil eden özel bir sınıf.
- * Bu, verinin kendisiyle birlikte UI'ın nasıl davranması gerektiği bilgisini de taşır.
- */
-data class DisplayablePersonDetail(
-    val person: PersonDetail,
-    val showEnglishSourceWarning: Boolean
-)
-
 @HiltViewModel
 class PersonDetailViewModel @Inject constructor(
     private val repository: MovieRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val personId: Int = savedStateHandle.get<Int>("personId")!!
+    private val personId: Int = savedStateHandle.get<Int>("personId") ?: 0
 
-    // LiveData'mız artık UI'a özel DisplayablePersonDetail modelini tutacak.
     private val _personDetail = MutableLiveData<DisplayablePersonDetail>()
     val personDetail: LiveData<DisplayablePersonDetail> = _personDetail
 
@@ -46,57 +38,52 @@ class PersonDetailViewModel @Inject constructor(
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
-    private val compositeDisposable = CompositeDisposable()
+    private val disposable = CompositeDisposable()
 
     init {
-        loadPersonData()
+        if (personId != 0) loadPersonData()
     }
 
     private fun loadPersonData() {
         _isLoading.value = true
 
-        // 1. Önce Türkçe detayları getiren bir Single oluştur.
-        val turkishDetailsSingle = repository.fetchPersonDetails(personId, "tr-TR").subscribeOn(Schedulers.io())
+        val turkishDetails = repository.fetchPersonDetails(personId, "tr-TR").subscribeOn(Schedulers.io())
+        val movieCredits = repository.fetchPersonMovieCredits(personId, "tr-TR").subscribeOn(Schedulers.io())
 
-        // 2. Oyuncunun filmlerini getiren bir Single oluştur.
-        val movieCreditsSingle = repository.fetchPersonMovieCredits(personId, "tr-TR").subscribeOn(Schedulers.io())
-
-        compositeDisposable.add(
-            turkishDetailsSingle
-                .flatMap { turkishDetails ->
-                    // 3. Gelen Türkçe biyografi boş mu diye kontrol et.
-                    if (turkishDetails.biography.isNullOrBlank()) {
-                        // 4. Eğer boşsa, İngilizce detayları iste ve sonucu uyarı flag'i ile birlikte paketle.
-                        repository.fetchPersonDetails(personId, "en-US").subscribeOn(Schedulers.io())
-                            .map { englishDetails -> DisplayablePersonDetail(englishDetails, true) }
+        disposable.add(
+            turkishDetails
+                .flatMap { details ->
+                    if (details.biography.isNullOrBlank()) {
+                        // Türkçe biyografi yoksa İngilizce'yi çek ve uyarılı model döndür
+                        repository.fetchPersonDetails(personId, "en-US")
+                            .subscribeOn(Schedulers.io())
+                            .map { DisplayablePersonDetail(it, true) }
                     } else {
-                        // 5. Eğer doluysa, mevcut Türkçe detayları kullan ve uyarı flag'ini false yap.
-                        Single.just(DisplayablePersonDetail(turkishDetails, false))
+                        // Türkçe varsa direkt onu kullan
+                        Single.just(DisplayablePersonDetail(details, false))
                     }
                 }
-                // 6. Biyografi işi bittikten sonra, sonucu film kredileriyle birleştir.
-                .zipWith(movieCreditsSingle) { displayableDetails, credits ->
-                    Pair(displayableDetails, credits.cast ?: emptyList())
+                .zipWith(movieCredits) { displayablePerson, creditsResponse ->
+                    // Detay ve film listesini birleştir
+                    Pair(displayablePerson, creditsResponse.cast ?: emptyList())
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ (displayableDetails, movies) ->
-                    _personDetail.value = displayableDetails
+                .subscribe({ (person, movies) ->
+                    _personDetail.value = person
                     _knownForMovies.value = movies
                     _isLoading.value = false
-                }, { throwable ->
-                    _error.value = "Oyuncu bilgileri yüklenemedi: ${throwable.localizedMessage}"
+                }, { t ->
+                    _error.value = t.localizedMessage
                     _isLoading.value = false
                 })
         )
     }
 
     // --- Helper Fonksiyonlar ---
-    fun formatGender(gender: Int?): String {
-        return when (gender) {
-            1 -> "Kadın"
-            2 -> "Erkek"
-            else -> "Belirtilmemiş"
-        }
+    fun formatGender(gender: Int?): String = when (gender) {
+        1 -> "Kadın"
+        2 -> "Erkek"
+        else -> "Belirtilmemiş"
     }
 
     fun formatBirthdayAndAge(birthday: String?): String {
@@ -105,16 +92,15 @@ class PersonDetailViewModel @Inject constructor(
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             val birthDate = LocalDate.parse(birthday, formatter)
             val age = Period.between(birthDate, LocalDate.now()).years
-
             val displayFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale("tr"))
             "${birthDate.format(displayFormatter)} ($age yaşında)"
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             birthday
         }
     }
 
     override fun onCleared() {
         super.onCleared()
-        compositeDisposable.clear()
+        disposable.clear()
     }
 }

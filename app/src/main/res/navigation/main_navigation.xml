@@ -108,4 +108,22 @@
         android:label="fragment_television_series"
         tools:layout="@layout/fragment_television_series" />
 
+    <fragment
+        android:id="@+id/seasonDetailFragment"
+        android:name="com.allmoviedatabase.movielibrary.view.fragment.SeasonDetailFragment"
+        android:label="fragment_season_detail"
+        tools:layout="@layout/fragment_season_detail">
+
+        <argument
+            android:name="tvId"
+            app:argType="integer" />
+        <argument
+            android:name="seasonNumber"
+            app:argType="integer" />
+    </fragment>
+
+    <action
+        android:id="@+id/action_detailTvShowFragment_to_seasonDetailFragment"
+        app:destination="@id/seasonDetailFragment" />
+
 </navigation>

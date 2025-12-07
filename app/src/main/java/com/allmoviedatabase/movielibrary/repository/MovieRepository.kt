@@ -2,6 +2,7 @@ package com.allmoviedatabase.movielibrary.repository
 
 import com.allmoviedatabase.movielibrary.data.MovieApiService
 import com.allmoviedatabase.movielibrary.model.*
+import com.allmoviedatabase.movielibrary.model.SeasonDetail.SeasonDetailResponse
 import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 
@@ -66,4 +67,8 @@ class MovieRepository @Inject constructor(private val movieApiService: MovieApiS
 
     fun fetchTvShowRecommendations(tvId: Int, language: String) =
         movieApiService.getTvShowRecommendations(tvId, language)
+
+    fun getSeasonDetails(tvId: Int, seasonNumber: Int, language: String): Single<SeasonDetailResponse> {
+        return movieApiService.getSeasonDetails(tvId, seasonNumber, language)
+    }
 }
