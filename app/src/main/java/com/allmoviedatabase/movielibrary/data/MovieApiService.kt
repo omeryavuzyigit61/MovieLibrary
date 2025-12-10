@@ -3,6 +3,7 @@ package com.allmoviedatabase.movielibrary.data
 import com.allmoviedatabase.movielibrary.model.Adult.ReleaseDatesResponse
 import com.allmoviedatabase.movielibrary.model.BaseResponse
 import com.allmoviedatabase.movielibrary.model.Credits.CreditsResponse
+import com.allmoviedatabase.movielibrary.model.Detail.ExternalIds
 import com.allmoviedatabase.movielibrary.model.Detail.MovieDetail
 import com.allmoviedatabase.movielibrary.model.Movie
 import com.allmoviedatabase.movielibrary.model.Person
@@ -12,6 +13,7 @@ import com.allmoviedatabase.movielibrary.model.SearchResult
 import com.allmoviedatabase.movielibrary.model.SeasonDetail.SeasonDetailResponse
 import com.allmoviedatabase.movielibrary.model.TV.TvShowDetail
 import com.allmoviedatabase.movielibrary.model.TvShow
+import com.allmoviedatabase.movielibrary.model.video.VideoResponse
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -163,5 +165,23 @@ interface MovieApiService {
         @Path("season_number") seasonNumber: Int,
         @Query("language") language: String = "tr-TR"
     ): Single<SeasonDetailResponse>
+
+    @GET("movie/{movie_id}/videos")
+    fun getMovieVideos(
+        @Path("movie_id") movieId: Int,
+        @Query("language") language: String = "en-US" // Fragmanlar genelde İngilizce veritabanında daha çoktur, TR yoksa EN dönsün diye strateji gerekebilir ama şimdilik en-US yapalım veya tr-TR deneyip fallback yapabiliriz.
+    ): Single<VideoResponse>
+
+    // Dizi Videoları
+    @GET("tv/{tv_id}/videos")
+    fun getTvShowVideos(
+        @Path("tv_id") tvId: Int,
+        @Query("language") language: String = "en-US"
+    ): Single<VideoResponse>
+
+    @GET("movie/{movie_id}/external_ids")
+    fun getMovieExternalIds(
+        @Path("movie_id") movieId: Int
+    ): Single<ExternalIds>
 
 }

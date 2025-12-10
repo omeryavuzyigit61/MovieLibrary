@@ -7,18 +7,21 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.allmoviedatabase.movielibrary.databinding.ItemEpisodeExpandableBinding
 import com.allmoviedatabase.movielibrary.model.SeasonDetail.Episode
-import com.allmoviedatabase.movielibrary.util.Constants.IMAGE_BASE_URL
 import com.allmoviedatabase.movielibrary.util.Constants.IMAGE_BASE_URL_2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 
-class EpisodeAdapter(private val episodes: List<Episode>) : RecyclerView.Adapter<EpisodeAdapter.EpisodeViewHolder>() {
+class EpisodeAdapter(
+    private val episodes: List<Episode>,
+    private val onGuestClick: (Int) -> Unit // YENİ: Tıklama fonksiyonu eklendi
+) : RecyclerView.Adapter<EpisodeAdapter.EpisodeViewHolder>() {
 
-    // Hangi item'ın açık olduğunu tutan set (Birden fazla açılabilir)
+    // Senin mevcut genişletme mantığın (Aynen korundu)
     private val expandedPositions = mutableSetOf<Int>()
 
     inner class EpisodeViewHolder(val binding: ItemEpisodeExpandableBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(episode: Episode, position: Int) {
+
             // 1. TEMEL BİLGİLER
             binding.episodeTitleTextView.text = "${episode.episodeNumber} ${episode.name}"
 
@@ -34,10 +37,11 @@ class EpisodeAdapter(private val episodes: List<Episode>) : RecyclerView.Adapter
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(binding.episodeImageView)
 
-            // 2. GENİŞLEME MANTIĞI
+            // 2. GENİŞLEME MANTIĞI (Senin kodunla aynı)
             val isExpanded = expandedPositions.contains(position)
             binding.expandedLayout.visibility = if (isExpanded) View.VISIBLE else View.GONE
             binding.expandButton.text = if (isExpanded) "Küçült" else "Genişlet"
+
             // Özet kısmı genişleyince full görünsün, kapalıyken 3 satır
             binding.episodeOverviewTextView.maxLines = if (isExpanded) Int.MAX_VALUE else 3
 
@@ -51,15 +55,17 @@ class EpisodeAdapter(private val episodes: List<Episode>) : RecyclerView.Adapter
             // 4. KONUK OYUNCULAR RECYCLERVIEW
             binding.guestStarsLabelTextView.text = "Konuk Yıldızlar (${episode.guestStars?.size ?: 0})"
 
-            // Nested RecyclerView Ayarları
-            val guestAdapter = GuestStarAdapter(episode.guestStars ?: emptyList())
+            // DEĞİŞİKLİK BURADA: GuestStarAdapter'a tıklama fonksiyonunu gönderiyoruz
+            // (GuestStarAdapter'ın da güncellediğimiz halini kullandığından emin ol)
+            val guestAdapter = GuestStarAdapter(episode.guestStars ?: emptyList(), onGuestClick)
+
             binding.guestStarsRecyclerView.apply {
                 layoutManager = LinearLayoutManager(itemView.context)
                 adapter = guestAdapter
                 setRecycledViewPool(RecyclerView.RecycledViewPool()) // Performans için
             }
 
-            // 5. BUTON TIKLAMA
+            // 5. BUTON TIKLAMA (Senin kodunla aynı)
             binding.expandButton.setOnClickListener {
                 if (isExpanded) {
                     expandedPositions.remove(position)

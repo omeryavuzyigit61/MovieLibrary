@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.allmoviedatabase.movielibrary.model.Credits.CastMember
 import com.allmoviedatabase.movielibrary.model.ListItem
 import com.allmoviedatabase.movielibrary.model.TV.TvShowDetail
+import com.allmoviedatabase.movielibrary.model.video.VideoResult // VideoResult import edildi
 import com.allmoviedatabase.movielibrary.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -32,6 +33,10 @@ class DetailTvShowViewModel @Inject constructor(
     private val _recommendations = MutableLiveData<List<ListItem>>()
     val recommendations: LiveData<List<ListItem>> = _recommendations
 
+    // YENİ: Video Listesi
+    private val _videos = MutableLiveData<List<VideoResult>>()
+    val videos: LiveData<List<VideoResult>> = _videos
+
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -44,31 +49,58 @@ class DetailTvShowViewModel @Inject constructor(
     private fun loadAllData() {
         _isLoading.value = true
 
-        // 3 isteği aynı anda (paralel) başlatıp sonuçları birleştiriyoruz
         disposable.add(
             Single.zip(
                 repository.fetchTvShowDetails(tvId, "tr-TR"),
                 repository.fetchTvShowCredits(tvId, "tr-TR"),
-                repository.fetchTvShowRecommendations(tvId, "tr-TR")
-            ) { detail, credits, recs ->
-                // Sonuçları bir Triple (üçlü) nesne olarak paketle
-                Triple(detail, credits, recs)
+                repository.fetchTvShowRecommendations(tvId, "tr-TR"),
+                repository.fetchTvShowVideos(tvId) // 4. İstek: Videolar
+            ) { detail, creditsResponse, recsResponse, videosResponse ->
+
+                // DATA İŞLEME (MAPPING) BURADA YAPILIYOR
+                // Böylece DataResult içine ham response değil, işlenmiş liste gidiyor.
+
+                // 1. Cast Listesi
+                val castList = creditsResponse.cast ?: emptyList()
+
+                // 2. Öneriler Listesi (Dizileri ListItem'a çeviriyoruz)
+                // 'it' hatası almamak için açık isim veriyoruz
+                val recsList = recsResponse.results?.map { tvShow ->
+                    ListItem.TvShowItem(tvShow)
+                } ?: emptyList()
+
+                // 3. Video Listesi (Sadece YouTube olanlar)
+                val videoList = videosResponse.results?.filter { video ->
+                    video.site == "YouTube"
+                } ?: emptyList()
+
+                // Paketlenmiş sonuç
+                DataResult(detail, castList, recsList, videoList)
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ (detail, creditsResponse, recsResponse) ->
-                    // Tüm veriler başarıyla geldi
-                    _tvDetail.value = detail
-                    _cast.value = creditsResponse.cast ?: emptyList()
-                    _recommendations.value = recsResponse.results?.map { ListItem.TvShowItem(it) } ?: emptyList()
+                .subscribe({ result ->
+                    _tvDetail.value = result.detail
+                    _cast.value = result.cast
+                    _recommendations.value = result.recommendations
+                    _videos.value = result.videos
+
                     _isLoading.value = false
                 }, { error ->
-                    // Herhangi birinde hata olursa buraya düşer
                     _isLoading.value = false
-                    // Hata yönetimi (Opsiyonel: _error.value = error.message)
+                    // Hata loglama veya gösterme işlemi buraya eklenebilir
+                    error.printStackTrace()
                 })
         )
     }
+
+    // Bu sınıf sadece işlenmiş (hazır) verileri taşır
+    private data class DataResult(
+        val detail: TvShowDetail,
+        val cast: List<CastMember>,
+        val recommendations: List<ListItem>,
+        val videos: List<VideoResult>
+    )
 
     override fun onCleared() {
         super.onCleared()

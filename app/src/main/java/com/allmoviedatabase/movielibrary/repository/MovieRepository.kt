@@ -2,7 +2,9 @@ package com.allmoviedatabase.movielibrary.repository
 
 import com.allmoviedatabase.movielibrary.data.MovieApiService
 import com.allmoviedatabase.movielibrary.model.*
+import com.allmoviedatabase.movielibrary.model.Detail.ExternalIds
 import com.allmoviedatabase.movielibrary.model.SeasonDetail.SeasonDetailResponse
+import com.allmoviedatabase.movielibrary.model.video.VideoResponse
 import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 
@@ -70,5 +72,19 @@ class MovieRepository @Inject constructor(private val movieApiService: MovieApiS
 
     fun getSeasonDetails(tvId: Int, seasonNumber: Int, language: String): Single<SeasonDetailResponse> {
         return movieApiService.getSeasonDetails(tvId, seasonNumber, language)
+    }
+
+    fun fetchMovieVideos(movieId: Int): Single<VideoResponse> {
+        // Fragmanlar için önce TR denemek, yoksa EN çekmek en iyisidir ama
+        // basitlik adına şimdilik global (en-US) çekelim, genelde official trailerlar orada olur.
+        return movieApiService.getMovieVideos(movieId, "en-US")
+    }
+
+    fun fetchTvShowVideos(tvId: Int): Single<VideoResponse> {
+        return movieApiService.getTvShowVideos(tvId, "en-US")
+    }
+
+    fun fetchMovieExternalIds(movieId: Int): Single<ExternalIds> {
+        return movieApiService.getMovieExternalIds(movieId)
     }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,21 +8,18 @@
     android:layout_marginBottom="8dp"
     android:layout_marginHorizontal="4dp"
     app:cardCornerRadius="12dp"
-    app:cardElevation="4dp"
-    app:cardBackgroundColor="@color/design_default_color_surface">
-
+    app:cardElevation="4dp">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/episodeImageView"
-            android:layout_width="wrap_content"
+            android:layout_width="140dp"
             android:layout_height="80dp"
             android:layout_margin="12dp"
             android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:maxWidth="140dp"
+            android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@tools:sample/backgrounds/scenic" />
@@ -34,27 +31,26 @@
             android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
             android:textStyle="bold"
-            android:textSize="15sp"
+            android:textSize="16sp"
             android:ellipsize="end"
             android:maxLines="2"
+            android:textColor="?android:textColorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/episodeImageView"
             app:layout_constraintTop_toTopOf="@+id/episodeImageView"
             tools:text="1. Will Byers'ın Ortadan Kayboluşu" />
-
         <TextView
             android:id="@+id/episodeInfoTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="12dp"
-            android:textSize="12sp"
-            android:textColor="@android:color/darker_gray"
+            android:textSize="13sp"
+            android:textColor="?android:textColorSecondary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/episodeTitleTextView"
             app:layout_constraintTop_toBottomOf="@+id/episodeTitleTextView"
             tools:text="85%  15 Temmuz 2016  48m" />
-
         <TextView
             android:id="@+id/episodeOverviewTextView"
             android:layout_width="0dp"
@@ -63,12 +59,12 @@
             android:layout_marginHorizontal="12dp"
             android:maxLines="3"
             android:ellipsize="end"
-            android:textSize="13sp"
+            android:textSize="14sp"
+            android:textColor="?android:textColorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/episodeImageView"
             tools:text="On his way home from a friend's house, young Will sees something terrifying. Nearby, a sinister secret lurks in the depths of a government lab." />
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/expandedLayout"
             android:layout_width="match_parent"
@@ -84,6 +80,7 @@
                 android:text="Ekip Kadrosu"
                 android:textStyle="bold"
                 android:textSize="14sp"
+                android:textColor="?android:textColorPrimary"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintWidth_percent="0.45" />
@@ -94,8 +91,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="8dp"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:lineSpacingExtra="2dp"
+                android:textColor="?android:textColorSecondary"
                 app:layout_constraintEnd_toEndOf="@+id/crewLabelTextView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/crewLabelTextView"
@@ -108,6 +106,7 @@
                 android:text="Konuk Yıldızlar"
                 android:textStyle="bold"
                 android:textSize="14sp"
+                android:textColor="?android:textColorPrimary"
                 android:layout_marginStart="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/crewLabelTextView"
@@ -142,6 +141,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Genişlet"
+            android:textColor="@color/main_color"
             android:textSize="14sp"
             android:textStyle="bold"
             android:insetTop="0dp"
@@ -153,4 +153,4 @@
             app:layout_constraintTop_toBottomOf="@+id/dividerView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</com.google.android.material.card.MaterialCardView>
+</androidx.cardview.widget.CardView>

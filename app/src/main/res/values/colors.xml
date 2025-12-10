@@ -8,4 +8,5 @@
     <color name="gray">#282828</color>">
     <color name="light_gray">#343333</color>
     <color name="background_color">#F8F8FA</color>
+    <color name="shimmer_placeholder">#DDDDDD</color>
 </resources>

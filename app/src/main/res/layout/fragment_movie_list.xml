@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/BackgroundScreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context=".view.fragment.MovieListFragment">
 
     <EditText
@@ -27,54 +28,67 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/searchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        style="@style/SearchScreen"
+        android:background="@drawable/search_background"
+        android:text="Ara"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="@+id/searchEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/searchEditText" />
+
     <HorizontalScrollView
         android:id="@+id/searchFilterContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbars="none"
         android:layout_marginTop="8dp"
+        android:scrollbars="none"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/searchEditText"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/searchEditText">
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/searchChipGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:singleLine="true"
-            app:singleSelection="true"
+            android:paddingHorizontal="16dp"
             app:chipSpacingHorizontal="8dp"
-            android:paddingHorizontal="16dp">
+            app:singleLine="true"
+            app:singleSelection="true">
 
             <com.google.android.material.chip.Chip
-                style="@style/MyCustomChipStyle"
                 android:id="@+id/chipSearchMulti"
+                style="@style/MyCustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hepsi"
-                android:checked="true"/>
+                android:checked="true"
+                android:text="Hepsi" />
 
             <com.google.android.material.chip.Chip
-                style="@style/MyCustomChipStyle"
                 android:id="@+id/chipSearchMovie"
+                style="@style/MyCustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Filmler"/>
+                android:text="Filmler" />
 
             <com.google.android.material.chip.Chip
-                style="@style/MyCustomChipStyle"
                 android:id="@+id/chipSearchTv"
+                style="@style/MyCustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Diziler"/>
+                android:text="Diziler" />
 
             <com.google.android.material.chip.Chip
-                style="@style/MyCustomChipStyle"
                 android:id="@+id/chipSearchPerson"
+                style="@style/MyCustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Kişiler"/>
+                android:text="Kişiler" />
 
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
@@ -118,9 +132,9 @@
         android:id="@+id/subCategoryContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/mainCategoryChipGroup"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/mainCategoryChipGroup">
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -131,43 +145,42 @@
                 android:id="@+id/movieSubCategoryChipGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:singleLine="true"
-                app:singleSelection="true"
-                app:chipSpacingHorizontal="8dp"
                 android:paddingHorizontal="16dp"
-                android:visibility="visible">
+                android:visibility="visible"
+                app:chipSpacingHorizontal="8dp"
+                app:singleLine="true"
+                app:singleSelection="true">
 
                 <com.google.android.material.chip.Chip
-                    style="@style/MyCustomChipStyle"
                     android:id="@+id/chipMoviePopular"
+                    style="@style/MyCustomChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Popüler"
-                    android:checked="true"/>
+                    android:checked="true" />
 
                 <com.google.android.material.chip.Chip
-                    style="@style/MyCustomChipStyle"
                     android:id="@+id/chipMovieTopRated"
+                    style="@style/MyCustomChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="En İyiler"/>
+                    android:text="En İyiler" />
 
                 <com.google.android.material.chip.Chip
-                    style="@style/MyCustomChipStyle"
                     android:id="@+id/chipMovieNowPlaying"
+                    style="@style/MyCustomChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Yayında"/>
+                    android:text="Yayında" />
 
                 <com.google.android.material.chip.Chip
-                    style="@style/MyCustomChipStyle"
                     android:id="@+id/chipMovieUpcoming"
+                    style="@style/MyCustomChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Yakında"/>
+                    android:text="Yakında" />
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
-
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -178,43 +191,42 @@
                 android:id="@+id/tvSubCategoryChipGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:singleLine="true"
-                app:singleSelection="true"
-                app:chipSpacingHorizontal="8dp"
                 android:paddingHorizontal="16dp"
-                android:visibility="gone">
+                android:visibility="gone"
+                app:chipSpacingHorizontal="8dp"
+                app:singleLine="true"
+                app:singleSelection="true">
 
                 <com.google.android.material.chip.Chip
-                    style="@style/MyCustomChipStyle"
                     android:id="@+id/chipTvPopular"
+                    style="@style/MyCustomChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Popüler"
-                    android:checked="true"/>
+                    android:checked="true" />
 
                 <com.google.android.material.chip.Chip
-                    style="@style/MyCustomChipStyle"
                     android:id="@+id/chipTvTopRated"
+                    style="@style/MyCustomChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="En İyiler"/>
+                    android:text="En İyiler" />
 
                 <com.google.android.material.chip.Chip
-                    style="@style/MyCustomChipStyle"
                     android:id="@+id/chipTvOnTheAir"
+                    style="@style/MyCustomChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Televizyonda"/>
+                    android:text="Televizyonda" />
 
                 <com.google.android.material.chip.Chip
-                    style="@style/MyCustomChipStyle"
                     android:id="@+id/chipTvAiringToday"
+                    style="@style/MyCustomChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Günün Programı"/>
+                    android:text="Günün Programı" />
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
-
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -225,19 +237,19 @@
                 android:id="@+id/peopleSubCategoryChipGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:singleLine="true"
-                app:singleSelection="true"
-                app:chipSpacingHorizontal="8dp"
                 android:paddingHorizontal="16dp"
-                android:visibility="gone">
+                android:visibility="gone"
+                app:chipSpacingHorizontal="8dp"
+                app:singleLine="true"
+                app:singleSelection="true">
 
                 <com.google.android.material.chip.Chip
-                    style="@style/MyCustomChipStyle"
                     android:id="@+id/chipPersonPopular"
+                    style="@style/MyCustomChipStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Popüler Kişiler"
-                    android:checked="true"/>
+                    android:checked="true" />
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
 
@@ -247,7 +259,7 @@
         android:id="@+id/movieListRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toTopOf="@+id/pagination_controls"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -255,24 +267,31 @@
         app:layout_constraintTop_toBottomOf="@+id/subCategoryContainer"
         app:spanCount="2" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        tools:visibility="visible"
-        app:layout_constraintTop_toTopOf="@id/movieListRecyclerView"
-        app:layout_constraintBottom_toBottomOf="@id/movieListRecyclerView"
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerViewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/pagination_controls"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/subCategoryContainer">
+
+    <include layout="@layout/layout_shimmer_grid" />
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
 
     <LinearLayout
         android:id="@+id/pagination_controls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?android:colorBackground"
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="8dp"
+        style="@style/BackgroundScreen2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -281,39 +300,70 @@
             android:id="@+id/button_previous"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@color/transparent"
+            android:background="@drawable/circle_background_semi_transparent"
             android:scaleType="fitCenter"
-            android:src="@drawable/angle_small_left" />
-
+            android:padding="8dp"
+            android:src="@drawable/angle_small_left"
+            app:tint="?attr/colorOnSurface" />
         <TextView
             android:id="@+id/text_view_page_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            tools:text="1" />
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="8dp"
+            android:text="1 / 100"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <ImageButton
             android:id="@+id/button_next"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:background="@drawable/circle_background_semi_transparent"
+            android:padding="8dp"
             android:scaleType="fitCenter"
-            android:background="@color/transparent"
-            android:src="@drawable/angle_small_right" />
+            android:src="@drawable/angle_small_right"
+            app:tint="?attr/colorOnSurface" />
     </LinearLayout>
-
-    <Button
-        android:id="@+id/searchButton"
+    <LinearLayout
+        android:id="@+id/errorLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:text="Ara"
-        app:backgroundTint="@null"
-        android:textColor="@color/black"
-        android:background="@drawable/search_background"
-        app:layout_constraintBottom_toBottomOf="@+id/searchEditText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/searchEditText" />
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@android:drawable/ic_dialog_alert"
+            app:tint="?android:textColorPrimary" />
+
+        <TextView
+            android:id="@+id/errorTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Bağlantı Hatası"
+            android:textStyle="bold"
+            android:textSize="16sp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRetry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Tekrar Dene" />
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.MovieLibrary" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/gray</item>
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
@@ -15,6 +16,22 @@
     <style name="BackgroundScreen">
         <item name="android:background">@color/gray</item>
     </style>
+
+    <style name="BackgroundScreen2">
+        <item name="android:backgroundTint">@color/gray</item>
+    </style>
+
+    <style name="TextTitleStyle">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextDescriptionStyle">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
 
     <style name="RoundedCorners10dp">
         <item name="cornerFamily">rounded</item>

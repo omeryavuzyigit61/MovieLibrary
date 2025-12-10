@@ -66,6 +66,10 @@
         <action
             android:id="@+id/action_detailTvShowFragment_to_fullCastFragment"
             app:destination="@id/fullCastFragment" />
+
+        <action
+            android:id="@+id/action_detailTvShowFragment_to_seasonDetailFragment"
+            app:destination="@id/seasonDetailFragment" />
     </fragment>
 
     <fragment
@@ -102,11 +106,6 @@
             app:destination="@id/detailMovieFragment" />
     </fragment>
 
-    <fragment
-        android:id="@+id/televisionSeriesFragment"
-        android:name="com.allmoviedatabase.movielibrary.view.fragment.TelevisionSeriesFragment"
-        android:label="fragment_television_series"
-        tools:layout="@layout/fragment_television_series" />
 
     <fragment
         android:id="@+id/seasonDetailFragment"
@@ -120,10 +119,10 @@
         <argument
             android:name="seasonNumber"
             app:argType="integer" />
-    </fragment>
 
-    <action
-        android:id="@+id/action_detailTvShowFragment_to_seasonDetailFragment"
-        app:destination="@id/seasonDetailFragment" />
+        <action
+            android:id="@+id/action_seasonDetailFragment_to_personDetailFragment"
+            app:destination="@id/personDetailFragment" />
+    </fragment>
 
 </navigation>

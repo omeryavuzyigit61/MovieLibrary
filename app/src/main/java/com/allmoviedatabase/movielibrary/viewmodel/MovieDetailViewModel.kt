@@ -5,8 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.allmoviedatabase.movielibrary.model.Credits.CreditsResponse
+import com.allmoviedatabase.movielibrary.model.Detail.ExternalIds
 import com.allmoviedatabase.movielibrary.model.Detail.MovieDetail
 import com.allmoviedatabase.movielibrary.model.Movie
+import com.allmoviedatabase.movielibrary.model.video.VideoResponse
+import com.allmoviedatabase.movielibrary.model.video.VideoResult // VideoResult modelini import ettiğinden emin ol
 import com.allmoviedatabase.movielibrary.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -21,7 +24,6 @@ class MovieDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    // ID'yi navArgs'tan otomatik alıyoruz, böylece Fragment'ta manuel çağırmaya gerek kalmıyor
     private val movieId = savedStateHandle.get<Int>("movieId") ?: 0
 
     private val _movieDetail = MutableLiveData<MovieDetail>()
@@ -36,11 +38,18 @@ class MovieDetailViewModel @Inject constructor(
     private val _ageRating = MutableLiveData<String?>()
     val ageRating: LiveData<String?> = _ageRating
 
+    // YENİ: Video Listesi
+    private val _videos = MutableLiveData<List<VideoResult>>()
+    val videos: LiveData<List<VideoResult>> = _videos
+
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
+    private val _externalIds = MutableLiveData<ExternalIds?>()
+    val externalIds: LiveData<ExternalIds?> = _externalIds
+
 
     private val disposable = CompositeDisposable()
 
@@ -51,16 +60,23 @@ class MovieDetailViewModel @Inject constructor(
     private fun loadAllData() {
         _isLoading.value = true
 
-        // 4 farklı API isteğini birleştiriyoruz
         disposable.add(
             Single.zip(
                 repository.fetchMovieDetails(movieId, "tr-TR"),
                 repository.fetchMovieCredits(movieId, "tr-TR"),
                 repository.fetchMovieRecommendations(movieId, "tr-TR"),
-                repository.fetchMovieReleaseDates(movieId)
-            ) { detail, credits, recs, releaseDates ->
-                // Verileri paketle
-                DataResult(detail, credits, recs.results ?: emptyList(), releaseDates)
+                repository.fetchMovieReleaseDates(movieId),
+                repository.fetchMovieVideos(movieId),
+                repository.fetchMovieExternalIds(movieId)
+            ) { detail, credits, recs, releaseDates, videos, externals ->
+                DataResult(
+                    detail,
+                    credits,
+                    recs.results ?: emptyList(),
+                    releaseDates,
+                    videos,
+                    externals
+                )
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -69,12 +85,20 @@ class MovieDetailViewModel @Inject constructor(
                     _movieCredits.value = result.credits
                     _movieRecommendations.value = result.recommendations
 
-                    // Yaş sınırı mantığı
-                    val turkeyRating = result.releaseDatesResponse.results
-                        ?.find { it.countryCode == "TR" }
-                        ?.releaseDates?.firstOrNull { !it.certification.isNullOrBlank() }
-                        ?.certification
-                    _ageRating.value = turkeyRating
+                    // Yaş Sınırı
+                    val turkeyInfo =
+                        result.releaseDatesResponse.results?.find { it.countryCode == "TR" }
+                    val rating =
+                        turkeyInfo?.releaseDates?.firstOrNull { !it.certification.isNullOrEmpty() }?.certification
+                    _ageRating.value = rating
+
+                    // YENİ: Video Listesini Atama
+                    // Sadece YouTube videolarını filtreleyebiliriz
+                    val videoList =
+                        result.videoResponse.results?.filter { it.site == "YouTube" } ?: emptyList()
+                    _videos.value = videoList
+
+                    _externalIds.value = result.externalIds
 
                     _isLoading.value = false
                 }, { t ->
@@ -84,13 +108,13 @@ class MovieDetailViewModel @Inject constructor(
         )
     }
 
-    // Zip işlemi için geçici data class
     private data class DataResult(
         val detail: MovieDetail,
         val credits: CreditsResponse,
         val recommendations: List<Movie>,
-        val releaseDatesResponse: com.allmoviedatabase.movielibrary.model.Adult.ReleaseDatesResponse
-        // Not: ReleaseDateResponse modelinizin tam yolunu veya adını kontrol edin
+        val releaseDatesResponse: com.allmoviedatabase.movielibrary.model.Adult.ReleaseDatesResponse,
+        val videoResponse: VideoResponse,
+        val externalIds: ExternalIds
     )
 
     override fun onCleared() {

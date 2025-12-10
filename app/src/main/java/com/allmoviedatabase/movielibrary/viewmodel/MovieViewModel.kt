@@ -27,26 +27,33 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
     private val _totalPages = MutableLiveData(1)
     val totalPages: LiveData<Int> = _totalPages
 
-    private val _isLoading = MutableLiveData<Boolean>()
+    private val _isLoading = MutableLiveData<Boolean>(false)
     val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> = _error
 
     private val disposable = CompositeDisposable()
 
-    private var currentSubCategory: SubCategory = SubCategory.POPULAR_MOVIE
-    private var currentSearchType: SearchType = SearchType.MULTI
-    private var lastQuery: String = ""
-    private var isSearchMode: Boolean = false
+    // PUBLIC YAPILDI (Tekrar Dene butonu için)
+    var currentSubCategory: SubCategory = SubCategory.POPULAR_MOVIE
+    var currentSearchType: SearchType = SearchType.MULTI
+    var lastQuery: String = ""
+    var isSearchMode: Boolean = false
 
     init {
         loadContentForCategory(SubCategory.POPULAR_MOVIE)
     }
 
     fun searchContent(query: String, type: SearchType, page: Int = 1) {
+        if (_isLoading.value == true && page != 1) return
+
         lastQuery = query
         currentSearchType = type
         isSearchMode = true
         _currentPage.value = page
         _isLoading.value = true
+        _error.value = null // Hatayı temizle
         disposable.clear()
 
         val apiCall = when (type) {
@@ -64,15 +71,17 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
             SearchType.TV -> movieRepository.searchTv(query, page).map { it.mapToListItem { t -> ListItem.TvShowItem(t) } }
             SearchType.PERSON -> movieRepository.searchPerson(query, page).map { it.mapToListItem { p -> ListItem.PersonItem(p) } }
         }
-
         executeApiCall(apiCall)
     }
 
     fun loadContentForCategory(subCategory: SubCategory, page: Int = 1) {
+        if (_isLoading.value == true && page != 1) return
+
         currentSubCategory = subCategory
         isSearchMode = false
         _currentPage.value = page
         _isLoading.value = true
+        _error.value = null // Hatayı temizle
         disposable.clear()
 
         val apiCall = when (subCategory) {
@@ -86,11 +95,9 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
             SubCategory.AIRING_TODAY_TV -> movieRepository.fetchAiringTodayTvShows(page).map { it.mapToListItem { t -> ListItem.TvShowItem(t) } }
             SubCategory.POPULAR_PERSON -> movieRepository.fetchPopularPeople(page).map { it.mapToListItem { p -> ListItem.PersonItem(p) } }
         }
-
         executeApiCall(apiCall)
     }
 
-    // Helper extension to reduce boilerplate in map
     private fun <T> com.allmoviedatabase.movielibrary.model.BaseResponse<T>.mapToListItem(mapper: (T) -> ListItem?): Pair<List<ListItem>, Int?> {
         val list = this.results?.mapNotNull(mapper) ?: emptyList()
         return Pair(list, this.totalPages)
@@ -104,26 +111,41 @@ class MovieViewModel @Inject constructor(private val movieRepository: MovieRepos
                     _contentList.value = items
                     _totalPages.value = totalP ?: 1
                     _isLoading.value = false
-                }, {
+                }, { t ->
+                    _error.value = t.localizedMessage ?: "Bir hata oluştu"
                     _isLoading.value = false
                 })
         )
     }
 
+    // --- SAYFA KONTROLLERİ ---
     fun nextPage() {
-        val next = (_currentPage.value ?: 1) + 1
-        if (next <= (_totalPages.value ?: 1)) {
-            if (isSearchMode) searchContent(lastQuery, currentSearchType, next)
-            else loadContentForCategory(currentSubCategory, next)
-        }
+        if (_isLoading.value == true) return
+        val current = _currentPage.value ?: 1
+        val max = _totalPages.value ?: 1
+        if (current < max) triggerLoad(current + 1)
     }
 
     fun previousPage() {
-        val prev = (_currentPage.value ?: 1) - 1
-        if (prev >= 1) {
-            if (isSearchMode) searchContent(lastQuery, currentSearchType, prev)
-            else loadContentForCategory(currentSubCategory, prev)
-        }
+        if (_isLoading.value == true) return
+        val current = _currentPage.value ?: 1
+        if (current > 1) triggerLoad(current - 1)
+    }
+
+    fun jumpToPage(page: Int) {
+        if (_isLoading.value == true) return
+        val max = _totalPages.value ?: 1
+        if (page in 1..max) triggerLoad(page)
+    }
+
+    private fun triggerLoad(page: Int) {
+        if (isSearchMode) searchContent(lastQuery, currentSearchType, page)
+        else loadContentForCategory(currentSubCategory, page)
+    }
+
+    // Tekrar Dene için son isteği yineler
+    fun retryLastRequest() {
+        triggerLoad(_currentPage.value ?: 1)
     }
 
     override fun onCleared() {

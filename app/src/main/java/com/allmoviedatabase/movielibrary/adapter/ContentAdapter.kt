@@ -3,6 +3,7 @@ package com.allmoviedatabase.movielibrary.adapter
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -16,10 +17,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlin.math.roundToInt
 
-// 1. Constructor'a 'isHorizontal' parametresini varsayılan olarak 'false' ile ekle
 class ContentAdapter(
     private val isHorizontal: Boolean = false,
-    private val onClick: (ListItem) -> Unit
+    // DEĞİŞİKLİK 1: Tıklama olayına ImageView parametresi eklendi
+    private val onClick: (ListItem, ImageView) -> Unit
 ) : ListAdapter<ListItem, ContentAdapter.BaseViewHolder<*>>(DiffCallback()) {
 
     private val MOVIE_ITEM = 1
@@ -30,12 +31,9 @@ class ContentAdapter(
         abstract fun bind(item: T)
     }
 
-    // ... ViewHolder sınıfların AYNI kalıyor (MovieViewHolder, TvShowViewHolder, PersonViewHolder) ...
-    // KOD TEKRARI OLMASIN DİYE BURAYI KISALTTIM, SENDEKİ MEVCUT KODLAR KALSIN
-
-    class MovieViewHolder(private val binding: ItemMovieBinding) : BaseViewHolder<Movie>(binding) {
+    // --- MOVIE VIEWHOLDER ---
+    inner class MovieViewHolder(private val binding: ItemMovieBinding) : BaseViewHolder<Movie>(binding) {
         override fun bind(item: Movie) {
-            // ... Senin mevcut kodların ...
             binding.titleNameTextView.text = item.title
             binding.dateMovieTextView.text = item.releaseDate
 
@@ -51,17 +49,25 @@ class ContentAdapter(
                 binding.ratingProgressIndicator.setIndicatorColor(color)
             }
 
+            // DEĞİŞİKLİK 2: Animasyon için benzersiz isim veriyoruz
+            binding.imageView.transitionName = "movie_${item.id}"
+
             Glide.with(itemView.context)
                 .load(IMAGE_BASE_URL + item.posterPath)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(binding.imageView)
+
+            // DEĞİŞİKLİK 3: Tıklama olayında resmi de gönderiyoruz
+            itemView.setOnClickListener {
+                onClick(ListItem.MovieItem(item), binding.imageView)
+            }
         }
     }
 
-    class TvShowViewHolder(private val binding: ItemTvShowBinding) : BaseViewHolder<TvShow>(binding) {
+    // --- TV SHOW VIEWHOLDER ---
+    inner class TvShowViewHolder(private val binding: ItemTvShowBinding) : BaseViewHolder<TvShow>(binding) {
         override fun bind(item: TvShow) {
-            // ... Senin mevcut kodların ...
-            binding.titleTextView.text = item.name // Dizi adı 'name' alanında gelir
+            binding.titleTextView.text = item.name
             binding.dateTextView.text = item.firstAirDate
 
             val rating = item.voteAverage?.times(10)
@@ -76,22 +82,39 @@ class ContentAdapter(
                 binding.ratingProgressIndicator.setIndicatorColor(color)
             }
 
+            // DEĞİŞİKLİK 2: Benzersiz Transition Name
+            binding.posterImageView.transitionName = "tv_${item.id}"
+
             Glide.with(itemView.context)
                 .load(IMAGE_BASE_URL + item.posterPath)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(binding.posterImageView)
+
+            // DEĞİŞİKLİK 3: Resmi gönderiyoruz
+            itemView.setOnClickListener {
+                onClick(ListItem.TvShowItem(item), binding.posterImageView)
+            }
         }
     }
 
-    class PersonViewHolder(private val binding: ItemPersonBinding) : BaseViewHolder<Person>(binding) {
+    // --- PERSON VIEWHOLDER ---
+    inner class PersonViewHolder(private val binding: ItemPersonBinding) : BaseViewHolder<Person>(binding) {
         override fun bind(item: Person) {
-            // ... Senin mevcut kodların ...
             binding.personNameTextView.text = item.name
             binding.knownForTextView.text = item.knownForDepartment
+
+            // DEĞİŞİKLİK 2: Benzersiz Transition Name
+            binding.profileImageView.transitionName = "person_${item.id}"
+
             Glide.with(itemView.context)
                 .load(IMAGE_BASE_URL + item.profilePath)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(binding.profileImageView)
+
+            // DEĞİŞİKLİK 3: Resmi gönderiyoruz
+            itemView.setOnClickListener {
+                onClick(ListItem.PersonItem(item), binding.profileImageView)
+            }
         }
     }
 
@@ -109,10 +132,8 @@ class ContentAdapter(
         return when (viewType) {
             MOVIE_ITEM -> {
                 val binding = ItemMovieBinding.inflate(inflater, parent, false)
-                // Eğer yatay liste ise Film kartını da küçült
                 if (isHorizontal) {
                     val params = binding.root.layoutParams
-                    // 150dp genişlik (pixel'e çeviriyoruz)
                     params.width = (150 * parent.context.resources.displayMetrics.density).toInt()
                     binding.root.layoutParams = params
                 }
@@ -120,15 +141,11 @@ class ContentAdapter(
             }
             TV_SHOW_ITEM -> {
                 val binding = ItemTvShowBinding.inflate(inflater, parent, false)
-
-                // 2. EĞER YATAY MOD İSE GENİŞLİĞİ SABİTLE (160dp)
                 if (isHorizontal) {
                     val params = binding.root.layoutParams
-                    // dp to pixel çevrimi: 160 * density
                     params.width = (160 * parent.context.resources.displayMetrics.density).toInt()
                     binding.root.layoutParams = params
                 }
-
                 TvShowViewHolder(binding)
             }
             PERSON_ITEM -> PersonViewHolder(ItemPersonBinding.inflate(inflater, parent, false))
@@ -138,7 +155,7 @@ class ContentAdapter(
 
     override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
         val item = getItem(position)
-        holder.itemView.setOnClickListener { onClick(item) }
+        // Not: setOnClickListener'ı yukarıda ViewHolder'ların içine taşıdık çünkü 'binding'e ihtiyacımız vardı.
 
         when (holder) {
             is MovieViewHolder -> holder.bind((item as ListItem.MovieItem).movie)

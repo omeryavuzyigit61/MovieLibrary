@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.allmoviedatabase.movielibrary.adapter.EpisodeAdapter
@@ -23,7 +24,7 @@ class SeasonDetailFragment : Fragment() {
     // NavArgs ile tvId ve seasonNumber alıyoruz
     private val args: SeasonDetailFragmentArgs by navArgs()
 
-    // Yeni oluşturduğumuz ViewModel
+    // ViewModel
     private val viewModel: SeasonDetailViewModel by viewModels()
 
     override fun onCreateView(
@@ -49,8 +50,16 @@ class SeasonDetailFragment : Fragment() {
     private fun setupObservers() {
         // Sezon Detaylarını Gözlemle
         viewModel.seasonDetails.observe(viewLifecycleOwner) { season ->
-            // Adapter'ı Kur
-            val adapter = EpisodeAdapter(season.episodes)
+
+            // --- GÜNCELLEME BURADA ---
+            // Adapter artık 2 parametre alıyor: (Liste) ve (Tıklama Fonksiyonu)
+            val adapter = EpisodeAdapter(season.episodes) { personId ->
+
+                // Konuk oyuncuya tıklandığında çalışacak kod:
+                val action = SeasonDetailFragmentDirections.actionSeasonDetailFragmentToPersonDetailFragment(personId)
+                findNavController().navigate(action)
+            }
+
             binding.episodesRecyclerView.layoutManager = LinearLayoutManager(context)
             binding.episodesRecyclerView.adapter = adapter
         }
