@@ -149,6 +149,16 @@ class DetailMovieFragment : Fragment() {
 
     private fun bindMovieDetails(movie: MovieDetail) {
         binding.apply {
+
+            btnWatchMovie.setOnClickListener {
+                // Test için sabit bir URL gönderiyoruz (Big Buck Bunny)
+                val dummyVideoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+
+                // Safe Args ile PlayerFragment'a URL gönder
+                val action = DetailMovieFragmentDirections.actionDetailMovieFragmentToPlayerFragment(dummyVideoUrl)
+                findNavController().navigate(action)
+            }
+
             Glide.with(this@DetailMovieFragment)
                 .load("https://media.themoviedb.org/t/p/w220_and_h330_face" + movie.posterPath)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)

@@ -17,7 +17,8 @@
         tools:targetApi="31">
         <activity
             android:name=".view.activity.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

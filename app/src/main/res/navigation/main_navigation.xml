@@ -3,7 +3,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_navigation"
-    app:startDestination="@id/movieListFragment">
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.allmoviedatabase.movielibrary.view.fragment.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login">
+
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
+
+        <action
+            android:id="@+id/action_loginFragment_to_movieListFragment"
+            app:destination="@id/movieListFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.allmoviedatabase.movielibrary.view.fragment.RegisterFragment"
+        android:label="fragment_register"
+        tools:layout="@layout/fragment_register">
+        <action
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/movieListFragment"
@@ -44,6 +75,10 @@
         <action
             android:id="@+id/action_detailMovieFragment_to_personDetailFragment"
             app:destination="@id/personDetailFragment" />
+
+        <action
+            android:id="@+id/action_detailMovieFragment_to_playerFragment"
+            app:destination="@id/playerFragment" />
     </fragment>
 
     <fragment
@@ -123,6 +158,17 @@
         <action
             android:id="@+id/action_seasonDetailFragment_to_personDetailFragment"
             app:destination="@id/personDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/playerFragment"
+        android:name="com.allmoviedatabase.movielibrary.view.fragment.PlayerFragment"
+        android:label="fragment_player"
+        tools:layout="@layout/fragment_player">
+
+        <argument
+            android:name="videoUrl"
+            app:argType="string" />
     </fragment>
 
 </navigation>

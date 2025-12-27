@@ -23,11 +23,5 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        /*val navController = findNavController(R.id.main_navigation)
-        navController.navigate(R.id.movie_fragment)*/
     }
-    /*override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.movie_fragment)
-        return navController.navigateUp() || super.onSupportNavigateUp()
-    }*/
 }

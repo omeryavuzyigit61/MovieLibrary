@@ -4,7 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.google.dagger.hilt) apply false
     id("com.google.devtools.ksp") version "2.1.20-2.0.1" apply false
-    id("androidx.navigation.safeargs.kotlin") version "2.7.7" apply false
+    id("androidx.navigation.safeargs.kotlin") version "2.9.6" apply false
+    id("com.google.gms.google-services") version "4.4.2" apply false
 }
 
 
