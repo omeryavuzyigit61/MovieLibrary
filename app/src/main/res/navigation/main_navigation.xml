@@ -5,6 +5,14 @@
     android:id="@+id/main_navigation"
     app:startDestination="@id/loginFragment">
 
+    <action
+        android:id="@+id/action_global_loginFragment"
+        app:destination="@id/loginFragment"
+        app:popUpTo="@id/main_navigation"
+        app:popUpToInclusive="true"
+        app:enterAnim="@android:anim/fade_in"
+        app:exitAnim="@android:anim/fade_out" />
+
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.allmoviedatabase.movielibrary.view.fragment.LoginFragment"
@@ -43,6 +51,14 @@
         tools:layout="@layout/fragment_movie_list">
 
         <action
+            android:id="@+id/action_movieListFragment_to_profileFragment"
+            app:destination="@id/profileFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
+
+        <action
             android:id="@+id/action_movieListFragment_to_detailMovieFragment"
             app:destination="@id/detailMovieFragment" />
 
@@ -53,6 +69,21 @@
         <action
             android:id="@+id/action_movieListFragment_to_personDetailFragment"
             app:destination="@id/personDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.allmoviedatabase.movielibrary.view.fragment.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile">
+
+        <action
+            android:id="@+id/action_profileFragment_to_detailMovieFragment"
+            app:destination="@id/detailMovieFragment" />
+
+        <action
+            android:id="@+id/action_profileFragment_to_detailTvShowFragment"
+            app:destination="@id/detailTvShowFragment" />
     </fragment>
 
     <fragment

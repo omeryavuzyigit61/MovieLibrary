@@ -6,6 +6,7 @@ import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -18,8 +19,8 @@ import com.allmoviedatabase.movielibrary.adapter.VideoAdapter
 import com.allmoviedatabase.movielibrary.databinding.FragmentDetailTvShowBinding
 import com.allmoviedatabase.movielibrary.model.ListItem
 import com.allmoviedatabase.movielibrary.util.Constants.IMAGE_BASE_URL
-import com.allmoviedatabase.movielibrary.util.openYoutubeVideo // Extension
-import com.allmoviedatabase.movielibrary.util.showDescriptionDialog // Extension
+import com.allmoviedatabase.movielibrary.util.openYoutubeVideo
+import com.allmoviedatabase.movielibrary.util.showDescriptionDialog
 import com.allmoviedatabase.movielibrary.viewmodel.DetailTvShowViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -55,9 +56,11 @@ class DetailTvShowFragment : Fragment() {
         binding.posterImageView.transitionName = "tv_${args.tvId}"
         setupUI()
         setupObservers()
+        setupInteractionListeners() // Yeni eklenen listenerlar
     }
 
     private fun setupUI() {
+        // ... (Senin mevcut UI kodların aynen burada) ...
         // Cast
         castAdapter = CastAdapter(
             isTvShow = true,
@@ -75,7 +78,7 @@ class DetailTvShowFragment : Fragment() {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         }
 
-        // Video (Extension)
+        // Video
         videoAdapter = VideoAdapter { videoKey ->
             requireContext().openYoutubeVideo(videoKey)
         }
@@ -99,8 +102,6 @@ class DetailTvShowFragment : Fragment() {
         recommendationsAdapter = ContentAdapter(isHorizontal = true) { listItem, imageView ->
             if (listItem is ListItem.TvShowItem) {
                 listItem.tvShow.id?.let { id ->
-                    // Animasyon için (İsteğe bağlı, burada ImageView yoksa boş geçebilirsin)
-                    // val extras = FragmentNavigatorExtras(imageView to "tv_$id")
                     val action = DetailTvShowFragmentDirections.actionDetailTvShowFragmentSelf(id)
                     findNavController().navigate(action)
                 }
@@ -112,7 +113,18 @@ class DetailTvShowFragment : Fragment() {
         }
     }
 
+    // YENİ EKLENEN BUTON TIKLAMA OLAYLARI
+    private fun setupInteractionListeners() {
+        binding.cbLike.setOnClickListener {
+            viewModel.toggleLike()
+        }
+        binding.cbWatchList.setOnClickListener {
+            viewModel.toggleWatchlist()
+        }
+    }
+
     private fun setupObservers() {
+        // --- MEVCUT OBSERVERLAR ---
         viewModel.cast.observe(viewLifecycleOwner) { castList -> castAdapter.submitList(castList) }
 
         viewModel.videos.observe(viewLifecycleOwner) { videoList ->
@@ -130,13 +142,10 @@ class DetailTvShowFragment : Fragment() {
                 dateTextView.text = tvShow.firstAirDate
                 episodeCountTextView.text = "${tvShow.numberOfSeasons ?: 0} Sezon, ${tvShow.numberOfEpisodes ?: 0} Bölüm"
                 genreTextView.text = tvShow.genres?.joinToString(", ") { it.name.toString() } ?: "-"
-
                 tagLineTextView.visibility = if (!tvShow.tagline.isNullOrEmpty()) View.VISIBLE else View.GONE
                 tagLineTextView.text = tvShow.tagline
-
                 descriptionTextView.text = tvShow.overview ?: "Açıklama bulunamadı."
 
-                // Dialog Extension Kullanımı:
                 if (!tvShow.overview.isNullOrEmpty()) {
                     readMoreHint.visibility = View.VISIBLE
                     val clickListener = View.OnClickListener { requireContext().showDescriptionDialog(tvShow.overview) }
@@ -172,6 +181,27 @@ class DetailTvShowFragment : Fragment() {
             binding.recommendationsLabel.visibility = if (list.isNullOrEmpty()) View.GONE else View.VISIBLE
             binding.recommendationsRecyclerView.visibility = if (list.isNullOrEmpty()) View.GONE else View.VISIBLE
             recommendationsAdapter.submitList(list)
+        }
+
+        // --- YENİ EKLENEN OBSERVERLAR (INTERACTION) ---
+
+        viewModel.isLiked.observe(viewLifecycleOwner) { isLiked ->
+            binding.cbLike.setOnCheckedChangeListener(null) // Döngüyü kırmak için
+            binding.cbLike.isChecked = isLiked
+            // Listener'ı tekrar set etmeye gerek yok, setOnClickListener kullanıyoruz
+        }
+
+        viewModel.isWatchlisted.observe(viewLifecycleOwner) { isSaved ->
+            binding.cbWatchList.setOnCheckedChangeListener(null)
+            binding.cbWatchList.isChecked = isSaved
+        }
+
+        viewModel.totalLikes.observe(viewLifecycleOwner) { count ->
+            binding.tvLikeCount.text = "$count Beğeni"
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) { errMsg ->
+            if (errMsg.isNotEmpty()) Toast.makeText(requireContext(), errMsg, Toast.LENGTH_SHORT).show()
         }
     }
 

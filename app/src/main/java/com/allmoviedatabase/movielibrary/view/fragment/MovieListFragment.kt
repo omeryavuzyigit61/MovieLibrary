@@ -243,6 +243,12 @@ class MovieListFragment : Fragment() {
                 true
             } else false
         }
+
+        // onViewCreated içinde:
+
+        binding.profileImageView.setOnClickListener {
+            findNavController().navigate(MovieListFragmentDirections.actionMovieListFragmentToProfileFragment())
+        }
     }
 
     // --- DÜZELTİLMİŞ DIALOG (Klavye Fix) ---

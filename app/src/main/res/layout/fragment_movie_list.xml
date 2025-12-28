@@ -38,7 +38,22 @@
         android:text="Ara"
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="@+id/searchEditText"
+        app:layout_constraintEnd_toStartOf="@id/profileImageView"
+        app:layout_constraintTop_toTopOf="@+id/searchEditText" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/profileImageView"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/user"
+        app:tint="@color/main_color"
+        app:layout_constraintBottom_toBottomOf="@+id/searchEditText"
         app:layout_constraintEnd_toEndOf="parent"
+        android:scaleType="centerCrop"
+        app:strokeColor="@color/main_color"
+        app:strokeWidth="1dp"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
         app:layout_constraintTop_toTopOf="@+id/searchEditText" />
 
     <HorizontalScrollView

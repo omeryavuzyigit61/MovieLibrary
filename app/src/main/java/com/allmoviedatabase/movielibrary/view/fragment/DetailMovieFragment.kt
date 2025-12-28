@@ -59,6 +59,8 @@ class DetailMovieFragment : Fragment() {
         binding.abuzittinImageView.transitionName = "movie_${args.movieId}"
         setupUI()
         setupObservers()
+        binding.cbLike.setOnClickListener { viewModel.toggleLike() }
+        binding.cbWatchList.setOnClickListener { viewModel.toggleWatchlist() }
     }
 
     private fun setupUI() {
@@ -144,6 +146,31 @@ class DetailMovieFragment : Fragment() {
                     } else btnImdb.visibility = View.GONE
                 }
             }
+        }
+        viewModel.isLiked.observe(viewLifecycleOwner) { isLiked ->
+            // Checkbox durumunu kodla değiştirirken listener tetiklenmesin diye null yapıyoruz
+            binding.cbLike.setOnCheckedChangeListener(null)
+            binding.cbLike.isChecked = isLiked
+
+            // Sadece kullanıcı parmağıyla basarsa çalışsın diye ClickListener kullanıyoruz
+            // (CheckBox için setOnClickListener daha güvenlidir bu durumlarda)
+            binding.cbLike.setOnClickListener {
+                viewModel.toggleLike()
+            }
+        }
+
+        // İzleme Listesi Durumu
+        viewModel.isWatchlisted.observe(viewLifecycleOwner) { isSaved ->
+            binding.cbWatchList.setOnCheckedChangeListener(null)
+            binding.cbWatchList.isChecked = isSaved
+            binding.cbWatchList.setOnClickListener {
+                viewModel.toggleWatchlist()
+            }
+        }
+
+        // Toplam Beğeni Sayısı (Global)
+        viewModel.totalLikes.observe(viewLifecycleOwner) { count ->
+            binding.tvLikeCount.text = "$count Beğeni"
         }
     }
 

@@ -9,4 +9,5 @@
     <color name="light_gray">#343333</color>
     <color name="background_color">#F8F8FA</color>
     <color name="shimmer_placeholder">#DDDDDD</color>
+    <color name="main_color_ripple">#1A2196F3</color>
 </resources>
