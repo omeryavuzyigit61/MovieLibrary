@@ -15,9 +15,6 @@ class UserListSelectionAdapter(private val onItemClick: (UserList) -> Unit) :
         fun bind(item: UserList, onItemClick: (UserList) -> Unit) {
             binding.tvListName.text = item.listName
             binding.tvListCount.text = "${item.itemCount} Film"
-
-            // Eğer istersen item.isPublic vs gibi ikonlar da koyabilirsin.
-
             binding.root.setOnClickListener { onItemClick(item) }
         }
     }

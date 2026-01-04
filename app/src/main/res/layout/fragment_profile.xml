@@ -228,7 +228,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
-        android:src="@drawable/adventure"
+        android:src="@drawable/plus_small"
         android:contentDescription="Yeni Liste Oluştur"
         android:visibility="gone"
         app:tint="@android:color/white"

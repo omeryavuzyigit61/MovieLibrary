@@ -59,18 +59,18 @@ object BadgeManager {
         // ==========================================
         // 2. ETKİLEŞİM ROZETLERİ
         // ==========================================
-        BadgeDefinition("comment_bronze", "Ses Veren", "İlk yorumunu yaptın.", android.R.drawable.ic_menu_edit, BadgeType.INTERACTION, BadgeTier.BRONZE, 1, null),
-        BadgeDefinition("comment_silver", "Yazar", "10 yorum yaptın. Klavyene sağlık.", android.R.drawable.ic_menu_sort_alphabetically, BadgeType.INTERACTION, BadgeTier.SILVER, 10, null),
-        BadgeDefinition("comment_gold", "Sinema Otoritesi", "50 yorum! Herkes seni dinliyor.", android.R.drawable.ic_menu_save, BadgeType.INTERACTION, BadgeTier.GOLD, 50, null),
+        BadgeDefinition("comment_bronze", "Ses Veren", "İlk yorumunu yaptın.", R.drawable.comments, BadgeType.INTERACTION, BadgeTier.BRONZE, 1, null),
+        BadgeDefinition("comment_silver", "Yazar", "10 yorum yaptın. Klavyene sağlık.", R.drawable.comments, BadgeType.INTERACTION, BadgeTier.SILVER, 10, null),
+        BadgeDefinition("comment_gold", "Sinema Otoritesi", "50 yorum! Herkes seni dinliyor.", R.drawable.comments, BadgeType.INTERACTION, BadgeTier.GOLD, 50, null),
 
         // ==========================================
         // 3. TÜR (GENRE) ROZETLERİ
         // ==========================================
 
         // --- AKSİYON (28) ---
-        BadgeDefinition("action_bronze", "Hızlı", "5 Aksiyon filmi izledin.", R.drawable.ic_left, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_ACTION),
-        BadgeDefinition("action_silver", "Dublör", "20 Aksiyon filmi. Patlamaları seversin.", android.R.drawable.ic_media_ff, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_ACTION),
-        BadgeDefinition("action_gold", "Yenilmez", "50 Aksiyon filmi. Tek kişilik ordusun.", android.R.drawable.ic_menu_manage, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_ACTION),
+        BadgeDefinition("action_bronze", "Hızlı", "5 Aksiyon filmi izledin.", R.drawable.bomb, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_ACTION),
+        BadgeDefinition("action_silver", "Dublör", "20 Aksiyon filmi. Patlamaları seversin.", R.drawable.bomb, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_ACTION),
+        BadgeDefinition("action_gold", "Yenilmez", "50 Aksiyon filmi. Tek kişilik ordusun.", R.drawable.bomb, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_ACTION),
 
         // --- KORKU (27) ---
         BadgeDefinition("horror_bronze", "Gece Lambası", "5 Korku filmi. Işıkları açık bırak.", R.drawable.horror, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_HORROR),
@@ -83,14 +83,14 @@ object BadgeManager {
         BadgeDefinition("adventure_gold", "Indiana Jones", "50 Macera filmi. Hazinenin peşindesin.", R.drawable.adventure, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_ADVENTURE),
 
         // --- ANİMASYON (16) ---
-        BadgeDefinition("anim_bronze", "Çizgi Sever", "5 Animasyon.", android.R.drawable.ic_menu_gallery, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_ANIMATION),
-        BadgeDefinition("anim_silver", "Hayalperest", "20 Animasyon. Renkli dünyaları seviyorsun.", android.R.drawable.ic_menu_crop, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_ANIMATION),
-        BadgeDefinition("anim_gold", "Ruhun Genç", "50 Animasyon. Asla büyümeyeceksin!", android.R.drawable.ic_menu_camera, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_ANIMATION),
+        BadgeDefinition("anim_bronze", "Çizgi Sever", "5 Animasyon.", R.drawable.animation, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_ANIMATION),
+        BadgeDefinition("anim_silver", "Hayalperest", "20 Animasyon. Renkli dünyaları seviyorsun.", R.drawable.animation, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_ANIMATION),
+        BadgeDefinition("anim_gold", "Ruhun Genç", "50 Animasyon. Asla büyümeyeceksin!", R.drawable.animation, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_ANIMATION),
 
         // --- KOMEDİ (35) ---
-        BadgeDefinition("comedy_bronze", "Gülümseyen", "5 Komedi filmi.", android.R.drawable.ic_menu_view, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_COMEDY),
-        BadgeDefinition("comedy_silver", "Şakacı", "20 Komedi filmi. Hayat sana güzel.", android.R.drawable.sym_action_chat, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_COMEDY),
-        BadgeDefinition("comedy_gold", "Kahkaha Makinesi", "50 Komedi filmi. Ortamın neşesisin!", android.R.drawable.sym_call_incoming, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_COMEDY),
+        BadgeDefinition("comedy_bronze", "Gülümseyen", "5 Komedi filmi.", R.drawable.comedy, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_COMEDY),
+        BadgeDefinition("comedy_silver", "Şakacı", "20 Komedi filmi. Hayat sana güzel.", R.drawable.comedy, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_COMEDY),
+        BadgeDefinition("comedy_gold", "Kahkaha Makinesi", "50 Komedi filmi. Ortamın neşesisin!", R.drawable.comedy, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_COMEDY),
 
         // --- SUÇ (80) ---
         BadgeDefinition("crime_bronze", "Dedektif", "5 Suç filmi.", R.drawable.crime, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_CRIME),
@@ -113,29 +113,29 @@ object BadgeManager {
         BadgeDefinition("family_gold", "Bizim Aile", "50 Aile filmi. En önemlisi ailedir.", R.drawable.family, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_FAMILY),
 
         // --- FANTASTİK (14) ---
-        BadgeDefinition("fantasy_bronze", "Büyücü", "5 Fantastik film.", android.R.drawable.star_off, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_FANTASY),
-        BadgeDefinition("fantasy_silver", "Ejderha Terbiyecisi", "20 Fantastik film. Hayal gücün sınır tanımıyor.", android.R.drawable.star_on, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_FANTASY),
-        BadgeDefinition("fantasy_gold", "Orta Dünya Sakini", "50 Fantastik film. Efsaneler gerçek oldu.", android.R.drawable.btn_star_big_on, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_FANTASY),
+        BadgeDefinition("fantasy_bronze", "Büyücü", "5 Fantastik film.", R.drawable.fantastic, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_FANTASY),
+        BadgeDefinition("fantasy_silver", "Ejderha Terbiyecisi", "20 Fantastik film. Hayal gücün sınır tanımıyor.", R.drawable.fantastic, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_FANTASY),
+        BadgeDefinition("fantasy_gold", "Orta Dünya Sakini", "50 Fantastik film. Efsaneler gerçek oldu.", R.drawable.fantastic, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_FANTASY),
 
         // --- TARİH (36) ---
-        BadgeDefinition("history_bronze", "Tarihçi", "5 Tarih filmi.", android.R.drawable.ic_menu_month, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_HISTORY),
-        BadgeDefinition("history_silver", "Zaman Yolcusu", "20 Tarih filmi. Geçmişe tanıklık ettin.", android.R.drawable.ic_menu_today, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_HISTORY),
-        BadgeDefinition("history_gold", "İmparator", "50 Tarih filmi. Tarih tekerrürden ibarettir.", android.R.drawable.ic_menu_week, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_HISTORY),
+        BadgeDefinition("history_bronze", "Tarihçi", "5 Tarih filmi.", R.drawable.historical, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_HISTORY),
+        BadgeDefinition("history_silver", "Zaman Yolcusu", "20 Tarih filmi. Geçmişe tanıklık ettin.", R.drawable.historical, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_HISTORY),
+        BadgeDefinition("history_gold", "İmparator", "50 Tarih filmi. Tarih tekerrürden ibarettir.", R.drawable.historical, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_HISTORY),
 
         // --- MÜZİK (10402) ---
-        BadgeDefinition("music_bronze", "Dinleyici", "5 Müzikal film.", android.R.drawable.ic_media_pause, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_MUSIC),
-        BadgeDefinition("music_silver", "Solist", "20 Müzikal film. Ritim tutmaya başladın.", android.R.drawable.ic_media_play, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_MUSIC),
-        BadgeDefinition("music_gold", "Maestro", "50 Müzikal film. Sahne senin!", android.R.drawable.ic_media_next, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_MUSIC),
+        BadgeDefinition("music_bronze", "Dinleyici", "5 Müzikal film.", R.drawable.musical, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_MUSIC),
+        BadgeDefinition("music_silver", "Solist", "20 Müzikal film. Ritim tutmaya başladın.", R.drawable.musical, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_MUSIC),
+        BadgeDefinition("music_gold", "Maestro", "50 Müzikal film. Sahne senin!", R.drawable.musical, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_MUSIC),
 
         // --- GİZEM (9648) ---
-        BadgeDefinition("mystery_bronze", "Şüpheci", "5 Gizem filmi.", android.R.drawable.ic_menu_help, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_MYSTERY),
-        BadgeDefinition("mystery_silver", "Sherlock", "20 Gizem filmi. Detaylar gözünden kaçmıyor.", android.R.drawable.ic_search_category_default, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_MYSTERY),
-        BadgeDefinition("mystery_gold", "Çözülmeyen Sır", "50 Gizem filmi. Her bilmeceyi çözersin.", android.R.drawable.ic_menu_zoom, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_MYSTERY),
+        BadgeDefinition("mystery_bronze", "Şüpheci", "5 Gizem filmi.", R.drawable.dedective, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_MYSTERY),
+        BadgeDefinition("mystery_silver", "Sherlock", "20 Gizem filmi. Detaylar gözünden kaçmıyor.", R.drawable.dedective, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_MYSTERY),
+        BadgeDefinition("mystery_gold", "Çözülmeyen Sır", "50 Gizem filmi. Her bilmeceyi çözersin.", R.drawable.dedective, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_MYSTERY),
 
         // --- ROMANTİK (10749) ---
-        BadgeDefinition("romance_bronze", "Duygusal", "5 Romantik film.", android.R.drawable.star_off, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_ROMANCE),
-        BadgeDefinition("romance_silver", "Aşık", "20 Romantik film. Aşkı arıyorsun.", android.R.drawable.star_on, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_ROMANCE),
-        BadgeDefinition("romance_gold", "Casanova", "50 Romantik film. Kalp hırsızı!", android.R.drawable.btn_star_big_on, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_ROMANCE),
+        BadgeDefinition("romance_bronze", "Duygusal", "5 Romantik film.", R.drawable.romantic, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_ROMANCE),
+        BadgeDefinition("romance_silver", "Aşık", "20 Romantik film. Aşkı arıyorsun.", R.drawable.romantic, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_ROMANCE),
+        BadgeDefinition("romance_gold", "Casanova", "50 Romantik film. Kalp hırsızı!", R.drawable.romantic, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_ROMANCE),
 
         // --- BİLİM KURGU (878) ---
         BadgeDefinition("scifi_bronze", "Meraklı", "5 Bilim Kurgu filmi.", R.drawable.science_fiction, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_SCIFI),
@@ -143,9 +143,9 @@ object BadgeManager {
         BadgeDefinition("scifi_gold", "Galaktik İmparator", "50 Bilim Kurgu. Uzay senin çöplüğün.", android.R.drawable.stat_sys_data_bluetooth, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_SCIFI),
 
         // --- GERİLİM (53) ---
-        BadgeDefinition("thriller_bronze", "Gergin", "5 Gerilim filmi.", android.R.drawable.ic_lock_idle_alarm, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_THRILLER),
-        BadgeDefinition("thriller_silver", "Soğukkanlı", "20 Gerilim filmi. Nabzın hiç yükselmiyor.", android.R.drawable.ic_lock_idle_charging, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_THRILLER),
-        BadgeDefinition("thriller_gold", "Buz Adam", "50 Gerilim filmi. Sinirlerin alınmış.", android.R.drawable.ic_lock_power_off, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_THRILLER),
+        BadgeDefinition("thriller_bronze", "Gergin", "5 Gerilim filmi.", R.drawable.ghost, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_THRILLER),
+        BadgeDefinition("thriller_silver", "Soğukkanlı", "20 Gerilim filmi. Nabzın hiç yükselmiyor.", R.drawable.ghost, BadgeType.GENRE, BadgeTier.SILVER, 20, GENRE_THRILLER),
+        BadgeDefinition("thriller_gold", "Buz Adam", "50 Gerilim filmi. Sinirlerin alınmış.", R.drawable.ghost, BadgeType.GENRE, BadgeTier.GOLD, 50, GENRE_THRILLER),
 
         // --- SAVAŞ (10752) ---
         BadgeDefinition("war_bronze", "Er", "5 Savaş filmi.", R.drawable.war, BadgeType.GENRE, BadgeTier.BRONZE, 5, GENRE_WAR),
