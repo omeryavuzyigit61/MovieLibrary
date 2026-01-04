@@ -6,24 +6,35 @@ import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.allmoviedatabase.movielibrary.R // R dosyanı kontrol et
 import com.allmoviedatabase.movielibrary.adapter.CastAdapter
+import com.allmoviedatabase.movielibrary.adapter.CommentsAdapter
 import com.allmoviedatabase.movielibrary.adapter.ContentAdapter
 import com.allmoviedatabase.movielibrary.adapter.SeasonsAdapter
+import com.allmoviedatabase.movielibrary.adapter.UserListSelectionAdapter // YENİ ADAPTER IMPORT
 import com.allmoviedatabase.movielibrary.adapter.VideoAdapter
 import com.allmoviedatabase.movielibrary.databinding.FragmentDetailTvShowBinding
 import com.allmoviedatabase.movielibrary.model.ListItem
 import com.allmoviedatabase.movielibrary.util.Constants.IMAGE_BASE_URL
+import com.allmoviedatabase.movielibrary.util.openFacebook
+import com.allmoviedatabase.movielibrary.util.openImdb
+import com.allmoviedatabase.movielibrary.util.openInstagram
+import com.allmoviedatabase.movielibrary.util.openTwitter
 import com.allmoviedatabase.movielibrary.util.openYoutubeVideo
 import com.allmoviedatabase.movielibrary.util.showDescriptionDialog
 import com.allmoviedatabase.movielibrary.viewmodel.DetailTvShowViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.material.bottomsheet.BottomSheetDialog // YENİ IMPORT
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.roundToInt
 
@@ -40,6 +51,7 @@ class DetailTvShowFragment : Fragment() {
     private lateinit var recommendationsAdapter: ContentAdapter
     private lateinit var castAdapter: CastAdapter
     private lateinit var videoAdapter: VideoAdapter
+    private lateinit var commentsAdapter: CommentsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,13 +66,28 @@ class DetailTvShowFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.posterImageView.transitionName = "tv_${args.tvId}"
+
         setupUI()
         setupObservers()
-        setupInteractionListeners() // Yeni eklenen listenerlar
+
+        // --- BUTON TIKLAMA OLAYLARI ---
+        binding.cbLike.setOnClickListener { viewModel.toggleLike() }
+        binding.cbWatchList.setOnClickListener { viewModel.toggleWatchlist() }
+
+        // YENİ: Listeye Ekle Butonu
+        binding.btnAddToList.setOnClickListener {
+            viewModel.fetchUserLists() // Listeleri çek
+            showAddToListBottomSheet() // Pencereyi aç
+        }
+
+        binding.btnPostComment.setOnClickListener {
+            val content = binding.etComment.text.toString()
+            val isSpoiler = binding.cbSpoiler.isChecked
+            viewModel.sendComment(content, isSpoiler)
+        }
     }
 
     private fun setupUI() {
-        // ... (Senin mevcut UI kodların aynen burada) ...
         // Cast
         castAdapter = CastAdapter(
             isTvShow = true,
@@ -111,20 +138,22 @@ class DetailTvShowFragment : Fragment() {
             adapter = recommendationsAdapter
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         }
-    }
 
-    // YENİ EKLENEN BUTON TIKLAMA OLAYLARI
-    private fun setupInteractionListeners() {
-        binding.cbLike.setOnClickListener {
-            viewModel.toggleLike()
-        }
-        binding.cbWatchList.setOnClickListener {
-            viewModel.toggleWatchlist()
+        // Yorumlar
+        commentsAdapter = CommentsAdapter()
+        binding.rvComments.apply {
+            adapter = commentsAdapter
+            layoutManager = LinearLayoutManager(context)
+            isNestedScrollingEnabled = false
+            setOnTouchListener { v, event ->
+                v.parent.requestDisallowInterceptTouchEvent(true)
+                v.onTouchEvent(event)
+                true
+            }
         }
     }
 
     private fun setupObservers() {
-        // --- MEVCUT OBSERVERLAR ---
         viewModel.cast.observe(viewLifecycleOwner) { castList -> castAdapter.submitList(castList) }
 
         viewModel.videos.observe(viewLifecycleOwner) { videoList ->
@@ -183,12 +212,9 @@ class DetailTvShowFragment : Fragment() {
             recommendationsAdapter.submitList(list)
         }
 
-        // --- YENİ EKLENEN OBSERVERLAR (INTERACTION) ---
-
         viewModel.isLiked.observe(viewLifecycleOwner) { isLiked ->
-            binding.cbLike.setOnCheckedChangeListener(null) // Döngüyü kırmak için
+            binding.cbLike.setOnCheckedChangeListener(null)
             binding.cbLike.isChecked = isLiked
-            // Listener'ı tekrar set etmeye gerek yok, setOnClickListener kullanıyoruz
         }
 
         viewModel.isWatchlisted.observe(viewLifecycleOwner) { isSaved ->
@@ -203,6 +229,71 @@ class DetailTvShowFragment : Fragment() {
         viewModel.error.observe(viewLifecycleOwner) { errMsg ->
             if (errMsg.isNotEmpty()) Toast.makeText(requireContext(), errMsg, Toast.LENGTH_SHORT).show()
         }
+
+        viewModel.comments.observe(viewLifecycleOwner) { comments ->
+            commentsAdapter.submitList(comments)
+        }
+
+        viewModel.commentPostStatus.observe(viewLifecycleOwner) { status ->
+            if (status.startsWith("SUCCESS") || status.startsWith("TEBRİKLER")) {
+                val message = if(status == "SUCCESS") "Yorumunuz gönderildi." else status
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                binding.etComment.text?.clear()
+                binding.cbSpoiler.isChecked = false
+            } else if (status.isNotEmpty()) {
+                Toast.makeText(context, status, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // YENİ: Listeye Ekleme Durumu Bildirimi
+        viewModel.addToListStatus.observe(viewLifecycleOwner) { message ->
+            if (!message.isNullOrEmpty()) {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // YENİ: Bottom Sheet Açma
+    private fun showAddToListBottomSheet() {
+        val dialog = BottomSheetDialog(requireContext())
+        val sheetView = LayoutInflater.from(requireContext()).inflate(R.layout.bottom_sheet_select_list, null)
+        dialog.setContentView(sheetView)
+
+        val rvLists = sheetView.findViewById<RecyclerView>(R.id.rvUserLists)
+        val progressBar = sheetView.findViewById<ProgressBar>(R.id.progressBarLists)
+        val tvNoList = sheetView.findViewById<TextView>(R.id.tvNoListWarning)
+
+        // Adapter Kurulumu
+        val listAdapter = UserListSelectionAdapter { selectedList ->
+            // Bir listeye tıklandığında:
+            val currentTvShow = viewModel.tvDetail.value
+            if (currentTvShow != null) {
+                // ViewModel'deki ekleme fonksiyonunu çağır (TV Show için)
+                viewModel.addTvShowToCustomList(selectedList.listId, currentTvShow)
+                dialog.dismiss()
+            } else {
+                Toast.makeText(context, "Dizi bilgisi henüz yüklenmedi.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        rvLists.layoutManager = LinearLayoutManager(requireContext())
+        rvLists.adapter = listAdapter
+
+        // Listeleri Gözlemle
+        progressBar.visibility = View.VISIBLE
+        viewModel.userLists.observe(viewLifecycleOwner) { lists ->
+            progressBar.visibility = View.GONE
+            if (lists.isNullOrEmpty()) {
+                tvNoList.visibility = View.VISIBLE
+                rvLists.visibility = View.GONE
+            } else {
+                tvNoList.visibility = View.GONE
+                rvLists.visibility = View.VISIBLE
+                listAdapter.submitList(lists)
+            }
+        }
+
+        dialog.show()
     }
 
     override fun onDestroyView() {

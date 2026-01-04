@@ -3,34 +3,30 @@ package com.allmoviedatabase.movielibrary.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.allmoviedatabase.movielibrary.model.Credits.CastMember
 import com.allmoviedatabase.movielibrary.model.ListItem
 import com.allmoviedatabase.movielibrary.model.TV.TvShowDetail
 import com.allmoviedatabase.movielibrary.model.video.VideoResult
 import com.allmoviedatabase.movielibrary.repository.MovieRepository
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
+import com.allmoviedatabase.movielibrary.repository.UserInteractionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailTvShowViewModel @Inject constructor(
     private val repository: MovieRepository,
-    private val auth: FirebaseAuth,         // EKLENDİ
-    private val firestore: FirebaseFirestore, // EKLENDİ
+    interactionRepository: UserInteractionRepository,
     savedStateHandle: SavedStateHandle
-) : ViewModel() {
+) : BaseDetailViewModel(interactionRepository) {
 
     private val tvId = savedStateHandle.get<Int>("tvId") ?: 0
 
-    // --- MEVCUT VERİLER ---
     private val _tvDetail = MutableLiveData<TvShowDetail>()
     val tvDetail: LiveData<TvShowDetail> = _tvDetail
 
@@ -43,30 +39,18 @@ class DetailTvShowViewModel @Inject constructor(
     private val _videos = MutableLiveData<List<VideoResult>>()
     val videos: LiveData<List<VideoResult>> = _videos
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
-
-    // --- YENİ EKLENEN INTERACTION VERİLERİ ---
-    private val _isLiked = MutableLiveData<Boolean>()
-    val isLiked: LiveData<Boolean> = _isLiked
-
-    private val _isWatchlisted = MutableLiveData<Boolean>()
-    val isWatchlisted: LiveData<Boolean> = _isWatchlisted
-
-    private val _totalLikes = MutableLiveData<Int>()
-    val totalLikes: LiveData<Int> = _totalLikes
-
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> = _error
-    // -----------------------------------------
+    // _totalLikes BURADAN SİLİNDİ (Base'den geliyor)
 
     private val disposable = CompositeDisposable()
 
     init {
         if (tvId != 0) {
             loadAllData()
-            checkUserInteractions() // Kullanıcı durumu
-            listenToGlobalLikes()   // Global beğeni sayısı
+            checkInteractions(tvId.toString())
+            listenToComments(tvId)
+
+            // EKSİK OLAN BUYDU:
+            listenToGlobalLikes(tvId.toString())
         }
     }
 
@@ -90,7 +74,7 @@ class DetailTvShowViewModel @Inject constructor(
                     video.site == "YouTube"
                 } ?: emptyList()
 
-                DataResult(detail, castList, recsList, videoList)
+                TvDataResult(detail, castList, recsList, videoList)
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -99,7 +83,6 @@ class DetailTvShowViewModel @Inject constructor(
                     _cast.value = result.cast
                     _recommendations.value = result.recommendations
                     _videos.value = result.videos
-
                     _isLoading.value = false
                 }, { error ->
                     _isLoading.value = false
@@ -108,111 +91,96 @@ class DetailTvShowViewModel @Inject constructor(
         )
     }
 
-    // --- INTERACTION FONKSİYONLARI ---
-
-    // 1. Global Beğeni Sayısını Dinle
-    private fun listenToGlobalLikes() {
-        val docRef = firestore.collection("movie_stats").document(tvId.toString())
-        docRef.addSnapshotListener { snapshot, e ->
-            if (e != null) return@addSnapshotListener
-            if (snapshot != null && snapshot.exists()) {
-                val count = snapshot.getLong("likeCount")?.toInt() ?: 0
-                _totalLikes.value = count
-            } else {
-                _totalLikes.value = 0
-            }
-        }
-    }
-
-    // 2. Kullanıcı Etkileşimlerini Kontrol Et
-    private fun checkUserInteractions() {
-        val userId = auth.currentUser?.uid ?: return
-
-        firestore.collection("users").document(userId)
-            .collection("favorites").document(tvId.toString())
-            .get().addOnSuccessListener { doc -> _isLiked.value = doc.exists() }
-
-        firestore.collection("users").document(userId)
-            .collection("watchlist").document(tvId.toString())
-            .get().addOnSuccessListener { doc -> _isWatchlisted.value = doc.exists() }
-    }
-
-    // 3. Beğenme İşlemi (Dizi Bilgileriyle)
     fun toggleLike() {
-        val userId = auth.currentUser?.uid ?: return
         val detail = _tvDetail.value ?: return
+        val currentStatus = _isLiked.value ?: false
+        val newStatus = !currentStatus
 
-        val statsRef = firestore.collection("movie_stats").document(tvId.toString())
-        val userFavRef = firestore.collection("users").document(userId)
-            .collection("favorites").document(tvId.toString())
+        val data = hashMapOf<String, Any>(
+            "tvId" to tvId,
+            "title" to (detail.name ?: ""),
+            "originalTitle" to (detail.originalName ?: ""),
+            "posterPath" to (detail.posterPath ?: ""),
+            "voteAverage" to (detail.voteAverage ?: 0.0),
+            "firstAirDate" to (detail.firstAirDate ?: ""),
+            "mediaType" to "tv",
+            "addedAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
+        )
 
-        firestore.runTransaction { transaction ->
-            val snapshot = transaction.get(userFavRef)
+        viewModelScope.launch {
+            val result = interactionRepository.toggleInteraction("favorites", tvId.toString(), data, newStatus)
 
-            if (snapshot.exists()) {
-                // Kaldır
-                transaction.delete(userFavRef)
-                transaction.update(statsRef, "likeCount", FieldValue.increment(-1))
-                _isLiked.postValue(false)
-            } else {
-                // Ekle (Detaylı Dizi Bilgisi)
-                val tvData = hashMapOf(
-                    "tvId" to tvId,
-                    "title" to detail.name,
-                    "originalTitle" to (detail.originalName ?: ""),
-                    "posterPath" to (detail.posterPath ?: ""),
-                    "voteAverage" to detail.voteAverage,
-                    "firstAirDate" to (detail.firstAirDate ?: ""),
-                    "mediaType" to "tv", // ÖNEMLİ: Dizi olduğunu belirtiyoruz
-                    "addedAt" to FieldValue.serverTimestamp()
-                )
-                transaction.set(userFavRef, tvData)
+            result.onSuccess { isNowLiked ->
+                _isLiked.value = isNowLiked
 
-                // Global İstatistik
-                val statsData = hashMapOf(
-                    "tvId" to tvId,
-                    "title" to detail.name,
-                    "originalTitle" to (detail.originalName ?: ""),
-                    "likeCount" to FieldValue.increment(1)
-                )
-                transaction.set(statsRef, statsData, SetOptions.merge())
+                // İSTATİSTİK GÜNCELLEME
+                val genreIds = detail.genres?.mapNotNull { it.id } ?: emptyList()
+                val userId = interactionRepository.currentUserId
 
-                _isLiked.postValue(true)
+                if (userId != null && genreIds.isNotEmpty()) {
+                    // isNowLiked true ise puan artar, false ise puan düşer
+                    interactionRepository.updateGenreStats(userId, genreIds, isAdding = isNowLiked)
+                }
             }
-        }.addOnFailureListener {
-            _error.value = "İşlem başarısız: ${it.localizedMessage}"
+
+            result.onFailure { _error.value = it.localizedMessage }
         }
     }
 
-    // 4. İzleme Listesi İşlemi (Dizi Bilgileriyle)
     fun toggleWatchlist() {
-        val userId = auth.currentUser?.uid ?: return
         val detail = _tvDetail.value ?: return
+        val currentStatus = _isWatchlisted.value ?: false
 
-        val userWatchRef = firestore.collection("users").document(userId)
-            .collection("watchlist").document(tvId.toString())
+        val data = hashMapOf<String, Any>(
+            "tvId" to tvId,
+            "title" to (detail.name ?: ""),
+            "originalTitle" to (detail.originalName ?: ""),
+            "posterPath" to (detail.posterPath ?: ""),
+            "mediaType" to "tv",
+            "voteAverage" to (detail.voteAverage ?: 0.0),
+            "addedAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
+        )
 
-        userWatchRef.get().addOnSuccessListener { doc ->
-            if (doc.exists()) {
-                userWatchRef.delete()
-                _isWatchlisted.value = false
-            } else {
-                val tvData = hashMapOf(
-                    "tvId" to tvId,
-                    "title" to detail.name,
-                    "originalTitle" to (detail.originalName ?: ""),
-                    "posterPath" to (detail.posterPath ?: ""),
-                    "mediaType" to "tv", // ÖNEMLİ
-                    "voteAverage" to detail.voteAverage,
-                    "addedAt" to FieldValue.serverTimestamp()
-                )
-                userWatchRef.set(tvData)
-                _isWatchlisted.value = true
-            }
+        viewModelScope.launch {
+            val result = interactionRepository.toggleInteraction("watchlist", tvId.toString(), data, !currentStatus)
+            result.onSuccess { _isWatchlisted.value = it }
+            result.onFailure { _error.value = it.localizedMessage }
         }
     }
 
-    private data class DataResult(
+    fun addTvShowToCustomList(listId: String, detail: TvShowDetail) {
+        val tvItem = hashMapOf<String, Any>(
+            "id" to (detail.id ?: 0),
+            "tvId" to (detail.id ?: 0),
+            "title" to (detail.name ?: ""),
+            "posterPath" to (detail.posterPath ?: ""),
+            "releaseDate" to (detail.firstAirDate ?: ""),
+            "voteAverage" to (detail.voteAverage ?: 0.0),
+            "mediaType" to "tv",
+            "addedAt" to com.google.firebase.Timestamp.now()
+        )
+
+        viewModelScope.launch {
+            val result = interactionRepository.addItemToCustomList(listId, tvItem)
+            result.onSuccess { _addToListStatus.value = "Dizi listeye eklendi" }
+            result.onFailure { _addToListStatus.value = it.localizedMessage }
+        }
+    }
+
+    fun sendComment(content: String, isSpoiler: Boolean) {
+        val genreIds = _tvDetail.value?.genres?.mapNotNull { it.id } ?: emptyList()
+
+        viewModelScope.launch {
+            _isLoading.value = true
+            val result = interactionRepository.sendComment(tvId.toString(), "tv", content, isSpoiler, genreIds)
+            _isLoading.value = false
+
+            result.onSuccess { _commentPostStatus.value = it }
+            result.onFailure { _commentPostStatus.value = it.localizedMessage }
+        }
+    }
+
+    private data class TvDataResult(
         val detail: TvShowDetail,
         val cast: List<CastMember>,
         val recommendations: List<ListItem>,

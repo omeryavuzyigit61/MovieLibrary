@@ -20,7 +20,6 @@
             android:layout_height="80dp"
             android:scaleType="centerCrop"
             android:src="@drawable/user"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
@@ -62,15 +61,48 @@
             app:layout_constraintTop_toBottomOf="@+id/tvProfileEmail"
             tools:text="24 Yaşında" />
 
+        <TextView
+            android:id="@+id/tvProfileGender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/main_color"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@+id/tvProfileName"
+            app:layout_constraintTop_toBottomOf="@+id/tvProfileAge"
+            tools:text="Erkek" />
+
+        <TextView
+            android:id="@+id/tvBadgeName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            style="@style/TextTitleStyle"
+            app:layout_constraintStart_toStartOf="@+id/ivProfileAvatar"
+            app:layout_constraintTop_toBottomOf="@+id/tvProfileGender"
+            android:text="Rozetlerim" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvBadgeList"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tvBadgeName"
+            app:layout_constraintTop_toBottomOf="@+id/tvBadgeName"
+            tools:listitem="@layout/item_profile_badge" />
+
         <ImageButton
             android:id="@+id/btnLogout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/user_logout"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/tvProfileGender"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tvProfileName"
             app:tint="@android:color/holo_red_light" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -95,6 +127,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="İzleme Listesi" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Listelerim" />
     </com.google.android.material.tabs.TabLayout>
 
     <EditText
@@ -146,7 +183,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Diziler" />
-
     </com.google.android.material.chip.ChipGroup>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -162,6 +198,19 @@
         app:spanCount="3"
         tools:listitem="@layout/item_profile_media" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvUserLists"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:clipToPadding="false"
+        android:padding="16dp"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tabLayoutProfile"
+        tools:listitem="@layout/item_user_list" />
+
     <TextView
         android:id="@+id/tvEmptyState"
         android:layout_width="wrap_content"
@@ -173,5 +222,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/rvProfileList" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabCreateList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        android:src="@drawable/adventure"
+        android:contentDescription="Yeni Liste Oluştur"
+        android:visibility="gone"
+        app:tint="@android:color/white"
+        app:backgroundTint="@color/main_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

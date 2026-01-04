@@ -40,6 +40,7 @@ class RegisterViewModel @Inject constructor(
         confirmPass: String,
         nickname: String,
         birthDate: Long?,
+        gender: String,
         isTermsAccepted: Boolean
     ) {
         // 1. Validasyon Kontrolü
@@ -55,7 +56,7 @@ class RegisterViewModel @Inject constructor(
             .addOnSuccessListener { authResult ->
                 val userId = authResult.user?.uid
                 if (userId != null) {
-                    saveUserToFirestore(userId, email, nickname, birthDate!!)
+                    saveUserToFirestore(userId, email, nickname,gender, birthDate!!)
                 }
             }
             .addOnFailureListener { e ->
@@ -68,11 +69,12 @@ class RegisterViewModel @Inject constructor(
             }
     }
 
-    private fun saveUserToFirestore(userId: String, email: String, nickname: String, birthDate: Long) {
+    private fun saveUserToFirestore(userId: String, email: String, nickname: String,gender: String, birthDate: Long) {
         val newUser = User(
             userId = userId,
             email = email,
             nickname = nickname,
+            gender = gender,
             birthDate = birthDate
         )
 

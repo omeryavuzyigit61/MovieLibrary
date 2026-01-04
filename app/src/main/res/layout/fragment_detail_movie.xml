@@ -228,17 +228,41 @@
             tools:listitem="@layout/item_cast_member" />
 
         <TextView
+            android:id="@+id/recommendationLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Ayrıca Önerilenler"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/castRecyclerView" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recommendationsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@+id/recommendationLabel"
+            tools:listitem="@layout/item_recommendation_movie" />
+
+        <TextView
             android:id="@+id/videosHeaderTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:text="Videolar &amp; Fragmanlar"
             android:textAppearance="?attr/textAppearanceTitleMedium"
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/castRecyclerView"
+            app:layout_constraintTop_toBottomOf="@+id/recommendationsRecyclerView"
             tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -417,29 +441,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/recommendationLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-            android:text="Ayrıca Önerilenler"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/movieInfoLayout" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recommendationsRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:paddingHorizontal="12dp"
-            android:clipToPadding="false"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@+id/recommendationLabel"
-            tools:listitem="@layout/item_recommendation_movie" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/interactionLayout"
@@ -449,7 +450,7 @@
             android:layout_marginTop="24dp"
             android:background="@drawable/info_box_background"
             android:padding="12dp"
-            app:layout_constraintTop_toBottomOf="@+id/recommendationsRecyclerView">
+            app:layout_constraintTop_toBottomOf="@+id/movieInfoLayout">
 
             <CheckBox
                 android:id="@+id/cbLike"
@@ -468,14 +469,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="0 Beğeni"
+                android:text="0"
                 style="@style/TextTitleStyle"
                 app:layout_constraintBottom_toBottomOf="@+id/cbLike"
                 app:layout_constraintStart_toEndOf="@+id/cbLike"
                 app:layout_constraintTop_toTopOf="@+id/cbLike" />
 
             <View
-                android:id="@+id/dividerInteraction"
+                android:id="@+id/dividerInteraction1"
                 android:layout_width="1dp"
                 android:layout_height="24dp"
                 android:layout_marginStart="16dp"
@@ -484,11 +485,39 @@
                 app:layout_constraintStart_toEndOf="@+id/tvLikeCount"
                 app:layout_constraintTop_toTopOf="parent"/>
 
+            <LinearLayout
+                android:id="@+id/btnAddToList"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:paddingHorizontal="8dp"
+                app:layout_constraintStart_toEndOf="@+id/dividerInteraction1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/user"
+                    app:tint="@color/main_color"/>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/dividerInteraction2"
+                android:layout_width="1dp"
+                android:layout_height="24dp"
+                android:background="#40FFFFFF"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btnAddToList"
+                app:layout_constraintTop_toTopOf="parent"/>
+
             <CheckBox
                 android:id="@+id/cbWatchList"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="32dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="8dp"
                 android:background="@android:color/transparent"
                 android:button="@null"
                 android:drawableStart="@drawable/selector_bookmark"
@@ -496,26 +525,107 @@
                 android:text="İzleme Listem"
                 style="@style/TextDescriptionStyle"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/dividerInteraction"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/dividerInteraction2"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/tvCommentsHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="16dp"
+            android:text="Yorumlar"
+            style="@style/TextTitleStyle"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/interactionLayout" />
+
+        <CheckBox
+            android:id="@+id/cbSpoiler"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Spoiler içeriyor"
+            style="@style/TextDescriptionStyle"
+            android:textSize="12sp"
+            android:buttonTint="#FF5252"
+            app:layout_constraintBottom_toBottomOf="@+id/tvCommentsHeader"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tvCommentsHeader"
+            android:layout_marginEnd="16dp"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/inputLayoutComment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginHorizontal="16dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeWidth="0dp"
+            app:boxBackgroundColor="#1AFFFFFF"
+            app:hintTextColor="#80FFFFFF"
+            android:hint="Düşüncelerini paylaş..."
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnPostComment"
+            app:layout_constraintTop_toBottomOf="@+id/tvCommentsHeader">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etComment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences|textMultiLine"
+                android:maxLines="3"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:paddingStart="16dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageButton
+            android:id="@+id/btnPostComment"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/info_box_background"
+            android:src="@drawable/send"
+            app:tint="@color/main_color"
+            app:layout_constraintBottom_toBottomOf="@+id/inputLayoutComment"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/inputLayoutComment" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvComments"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:clipToPadding="false"
+            android:nestedScrollingEnabled="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@+id/inputLayoutComment"
+            tools:layout_editor_absoluteX="16dp"
+            tools:listitem="@layout/item_comment" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnWatchMovie"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:text="FİLMİ İZLE"
+            android:textColor="@android:color/white"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@android:color/white"
+            app:backgroundTint="@color/rating_color"
+            app:cornerRadius="12dp"
             app:icon="@android:drawable/ic_media_play"
             app:iconGravity="textStart"
             app:iconPadding="8dp"
-            app:backgroundTint="@color/rating_color"
-            app:cornerRadius="12dp"
-            app:layout_constraintTop_toBottomOf="@+id/interactionLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/rvComments"
+            tools:layout_editor_absoluteX="16dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

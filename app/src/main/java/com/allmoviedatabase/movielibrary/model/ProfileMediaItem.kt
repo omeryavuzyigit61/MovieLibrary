@@ -2,19 +2,21 @@ package com.allmoviedatabase.movielibrary.model
 
 import java.util.Date
 
-// Firestore'dan veriyi otomatik çekmek için boş constructor (varsayılan değerler) şarttır.
 data class ProfileMediaItem(
-    val movieId: Int = 0,    // Hem film hem dizi ID'si buraya gelecek
-    val tvId: Int = 0,       // Dizi kaydederken tvId kullanmış olabiliriz, ikisini de kontrol ederiz
+    val id: Int = 0,    // Bu zaten arka planda getId() oluşturuyor, o yüzden çakışıyordu.
+    val movieId: Int = 0,
+    val tvId: Int = 0,
     val title: String = "",
     val originalTitle: String = "",
     val posterPath: String = "",
-    val mediaType: String = "movie", // "movie" veya "tv"
+    val mediaType: String = "movie",
     val voteAverage: Double = 0.0,
     val addedAt: Date? = null
 ) {
-    // ID'yi güvenli almak için yardımcı
-    fun getId(): Int {
-        return if (movieId != 0) movieId else tvId
+    // İSMİNİ DEĞİŞTİRDİK: getEffectiveId
+    fun getEffectiveId(): Int {
+        if (id != 0) return id
+        if (movieId != 0) return movieId
+        return tvId
     }
 }

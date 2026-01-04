@@ -3,8 +3,11 @@ package com.allmoviedatabase.movielibrary.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.allmoviedatabase.movielibrary.model.Badge.BadgeDefinition
+import com.allmoviedatabase.movielibrary.model.Badge.BadgeManager
 import com.allmoviedatabase.movielibrary.model.ProfileMediaItem
 import com.allmoviedatabase.movielibrary.model.User
+import com.allmoviedatabase.movielibrary.model.UserList
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -17,28 +20,38 @@ class ProfileViewModel @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : ViewModel() {
 
-    // Kullanıcı Bilgileri
+    // --- KULLANICI BİLGİLERİ ---
     private val _userInfo = MutableLiveData<User?>()
     val userInfo: LiveData<User?> get() = _userInfo
 
-    // UI'da gösterilecek FİLTRELENMİŞ liste
+    private val _userBadges = MutableLiveData<List<BadgeDefinition>>()
+    val userBadges: LiveData<List<BadgeDefinition>> get() = _userBadges
+
+    // --- FİLM/DİZİ LİSTESİ (Tab 0 ve 1 için) ---
     private val _mediaList = MutableLiveData<List<ProfileMediaItem>>()
     val mediaList: LiveData<List<ProfileMediaItem>> get() = _mediaList
 
-    // Arka planda tutulan HAM liste (Veritabanından gelen tüm veri)
+    // --- KULLANICI LİSTELERİ (Tab 2 için) ---
+    private val _userCreatedLists = MutableLiveData<List<UserList>>()
+    val userCreatedLists: LiveData<List<UserList>> get() = _userCreatedLists
+
+    // --- KONTROL DEĞİŞKENLERİ ---
     private var rawList: List<ProfileMediaItem> = emptyList()
 
-    // Filtreleme Durumları
-    var currentTabIsFavorites = true // true: Favorites, false: Watchlist
+    // 0: Favoriler, 1: İzleme Listesi, 2: Listelerim
+    var currentTabPosition = 0
         private set
-    private var currentFilterType = "all"    // "all", "movie", "tv"
+
+    private var currentFilterType = "all"
     private var currentSearchQuery = ""
 
     init {
         fetchUserProfile()
-        loadMediaData() // Başlangıçta favorileri çek
+        loadMediaData() // Başlangıçta Favorileri çek
+        fetchUserCreatedLists() // Başlangıçta Listeleri de çek
     }
 
+    // 1. KULLANICI PROFİLİNİ ÇEK
     private fun fetchUserProfile() {
         val userId = auth.currentUser?.uid
         if (userId != null) {
@@ -47,71 +60,117 @@ class ProfileViewModel @Inject constructor(
                     if (document.exists()) {
                         val user = document.toObject(User::class.java)
                         _userInfo.value = user
+
+                        // Rozetleri eşleştir
+                        val ownedBadgeIds = user?.earnedBadges ?: emptyList()
+                        val matchedBadges = ownedBadgeIds.mapNotNull { id ->
+                            BadgeManager.getBadgeById(id)
+                        }
+                        _userBadges.value = matchedBadges
                     }
                 }
         }
     }
 
-    // Veritabanından veriyi çeker (Tab değiştiğinde çağrılır)
+    // 2. FİLM/DİZİ VERİSİNİ ÇEK (Tab 0 ve 1)
     private fun loadMediaData() {
         val userId = auth.currentUser?.uid ?: return
-        val collectionName = if (currentTabIsFavorites) "favorites" else "watchlist"
+
+        // Eğer Listelerim sekmesindeysek film çekmeye gerek yok
+        if (currentTabPosition == 2) return
+
+        val collectionName = if (currentTabPosition == 0) "favorites" else "watchlist"
 
         firestore.collection("users").document(userId)
             .collection(collectionName)
-            .orderBy("addedAt", Query.Direction.DESCENDING) // En son eklenen en üstte
+            .orderBy("addedAt", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { result ->
                 val list = result.toObjects(ProfileMediaItem::class.java)
-                rawList = list // Ham listeyi sakla
-                applyFilters() // Filtreleri uygula ve UI'a gönder
+                rawList = list
+                applyFilters()
             }
             .addOnFailureListener {
-                // Hata yönetimi (log veya empty list)
                 rawList = emptyList()
                 applyFilters()
             }
     }
 
-    // Tüm filtreleri (Tab + Chip + Arama) birleştirip sonucu _mediaList'e atar
+    // 3. KULLANICI LİSTELERİNİ ÇEK (Tab 2)
+    private fun fetchUserCreatedLists() {
+        val userId = auth.currentUser?.uid ?: return
+
+        firestore.collection("users").document(userId)
+            .collection("created_lists")
+            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { result ->
+                val lists = result.toObjects(UserList::class.java)
+                _userCreatedLists.value = lists
+            }
+    }
+
+    // 4. YENİ LİSTE OLUŞTUR
+    fun createNewList(listName: String) {
+        val userId = auth.currentUser?.uid ?: return
+
+        val newListRef = firestore.collection("users").document(userId)
+            .collection("created_lists").document()
+
+        val newList = UserList(
+            listId = newListRef.id,
+            listName = listName,
+            createdAt = System.currentTimeMillis(),
+            itemCount = 0
+        )
+
+        newListRef.set(newList)
+            .addOnSuccessListener {
+                fetchUserCreatedLists() // Listeyi güncelle
+            }
+    }
+
+    // --- FİLTRELEME MANTIĞI (Sadece Filmler İçin) ---
     private fun applyFilters() {
         var filteredList = rawList
 
-        // 1. Tip Filtresi (Film/Dizi)
+        // Tip Filtresi
         if (currentFilterType != "all") {
             filteredList = filteredList.filter { it.mediaType == currentFilterType }
         }
 
-        // 2. Arama Filtresi
+        // Arama Filtresi
         if (currentSearchQuery.isNotEmpty()) {
             filteredList = filteredList.filter {
                 it.title.contains(currentSearchQuery, ignoreCase = true) ||
                         it.originalTitle.contains(currentSearchQuery, ignoreCase = true)
             }
         }
-
         _mediaList.value = filteredList
     }
 
-    // --- VIEW TARAFINDAN ÇAĞRILACAK FONKSİYONLAR ---
+    // --- UI ETKİLEŞİMLERİ ---
+    fun switchTab(position: Int) {
+        if (currentTabPosition == position) return
+        currentTabPosition = position
 
-    // Tab Değişimi
-    fun switchTab(isFavorites: Boolean) {
-        if (currentTabIsFavorites == isFavorites) return // Aynı taba basıldıysa işlem yapma
-        currentTabIsFavorites = isFavorites
-        loadMediaData() // Yeni koleksiyonu çek
+        if (position == 2) {
+            // "Listelerim" sekmesine geçildi
+            fetchUserCreatedLists()
+        } else {
+            // "Favoriler" veya "İzleme Listesi"ne geçildi
+            loadMediaData()
+        }
     }
 
-    // Chip Filtre Değişimi
     fun filterList(type: String) {
         currentFilterType = type
-        applyFilters() // Veritabanına gitmeye gerek yok, eldeki listeyi filtrele
+        applyFilters()
     }
 
-    // Arama
     fun searchInList(query: String) {
         currentSearchQuery = query
-        applyFilters() // Veritabanına gitmeye gerek yok, eldeki listeyi filtrele
+        applyFilters()
     }
 
     fun logout() {

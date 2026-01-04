@@ -6,30 +6,29 @@ import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.allmoviedatabase.movielibrary.R // R dosyasının doğru import edildiğinden emin ol
 import com.allmoviedatabase.movielibrary.adapter.CastAdapter
+import com.allmoviedatabase.movielibrary.adapter.CommentsAdapter
 import com.allmoviedatabase.movielibrary.adapter.RecommendationAdapter
+import com.allmoviedatabase.movielibrary.adapter.UserListSelectionAdapter // Yeni Adapter
 import com.allmoviedatabase.movielibrary.adapter.VideoAdapter
 import com.allmoviedatabase.movielibrary.databinding.FragmentDetailMovieBinding
 import com.allmoviedatabase.movielibrary.model.Detail.MovieDetail
-import com.allmoviedatabase.movielibrary.util.Constants.IMAGE_BASE_URL
-import com.allmoviedatabase.movielibrary.util.formatCurrency // Extension import
-import com.allmoviedatabase.movielibrary.util.formatLanguage // Extension import
-import com.allmoviedatabase.movielibrary.util.openFacebook
-import com.allmoviedatabase.movielibrary.util.openImdb
-import com.allmoviedatabase.movielibrary.util.openInstagram
-import com.allmoviedatabase.movielibrary.util.openTwitter
-import com.allmoviedatabase.movielibrary.util.openYoutubeVideo // Extension import
-import com.allmoviedatabase.movielibrary.util.showDescriptionDialog // Extension import
+import com.allmoviedatabase.movielibrary.util.* // Extension importlar
 import com.allmoviedatabase.movielibrary.viewmodel.MovieDetailViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.material.bottomsheet.BottomSheetDialog // Bottom Sheet için gerekli
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class DetailMovieFragment : Fragment() {
@@ -43,6 +42,7 @@ class DetailMovieFragment : Fragment() {
     private lateinit var castAdapter: CastAdapter
     private lateinit var recommendationAdapter: RecommendationAdapter
     private lateinit var videoAdapter: VideoAdapter
+    private lateinit var commentsAdapter: CommentsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,10 +57,25 @@ class DetailMovieFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.abuzittinImageView.transitionName = "movie_${args.movieId}"
+
         setupUI()
         setupObservers()
+
+        // Mevcut Butonlar
         binding.cbLike.setOnClickListener { viewModel.toggleLike() }
         binding.cbWatchList.setOnClickListener { viewModel.toggleWatchlist() }
+
+        // YENİ: Listeye Ekle Butonu
+        binding.btnAddToList.setOnClickListener {
+            viewModel.fetchUserLists() // Listeleri veritabanından çek
+            showAddToListBottomSheet() // Pencereyi aç
+        }
+
+        binding.btnPostComment.setOnClickListener {
+            val content = binding.etComment.text.toString()
+            val isSpoiler = binding.cbSpoiler.isChecked
+            viewModel.sendComment(content, isSpoiler)
+        }
     }
 
     private fun setupUI() {
@@ -81,7 +96,7 @@ class DetailMovieFragment : Fragment() {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         }
 
-        // Video Adapter (Extension Kullanımı)
+        // Video Adapter
         videoAdapter = VideoAdapter { videoKey ->
             requireContext().openYoutubeVideo(videoKey)
         }
@@ -99,9 +114,23 @@ class DetailMovieFragment : Fragment() {
             adapter = recommendationAdapter
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         }
+
+        // Comments Adapter
+        commentsAdapter = CommentsAdapter()
+        binding.rvComments.apply {
+            adapter = commentsAdapter
+            layoutManager = LinearLayoutManager(context)
+            isNestedScrollingEnabled = false
+            setOnTouchListener { v, event ->
+                v.parent.requestDisallowInterceptTouchEvent(true)
+                v.onTouchEvent(event)
+                true
+            }
+        }
     }
 
     private fun setupObservers() {
+        // Film Detayları
         viewModel.movieDetail.observe(viewLifecycleOwner) { movie -> bindMovieDetails(movie) }
         viewModel.movieCredits.observe(viewLifecycleOwner) { credits -> castAdapter.submitList(credits.cast) }
         viewModel.movieRecommendations.observe(viewLifecycleOwner) { movies -> recommendationAdapter.submitList(movies) }
@@ -121,25 +150,21 @@ class DetailMovieFragment : Fragment() {
         viewModel.externalIds.observe(viewLifecycleOwner) { ids ->
             binding.apply {
                 if (ids != null) {
-                    // Facebook
                     if (!ids.facebookId.isNullOrEmpty()) {
                         btnFacebook.visibility = View.VISIBLE
                         btnFacebook.setOnClickListener { requireContext().openFacebook(ids.facebookId) }
                     } else btnFacebook.visibility = View.GONE
 
-                    // Instagram
                     if (!ids.instagramId.isNullOrEmpty()) {
                         btnInstagram.visibility = View.VISIBLE
                         btnInstagram.setOnClickListener { requireContext().openInstagram(ids.instagramId) }
                     } else btnInstagram.visibility = View.GONE
 
-                    // Twitter
                     if (!ids.twitterId.isNullOrEmpty()) {
                         btnTwitter.visibility = View.VISIBLE
                         btnTwitter.setOnClickListener { requireContext().openTwitter(ids.twitterId) }
                     } else btnTwitter.visibility = View.GONE
 
-                    // IMDb
                     if (!ids.imdbId.isNullOrEmpty()) {
                         btnImdb.visibility = View.VISIBLE
                         btnImdb.setOnClickListener { requireContext().openImdb(ids.imdbId) }
@@ -147,41 +172,96 @@ class DetailMovieFragment : Fragment() {
                 }
             }
         }
+
         viewModel.isLiked.observe(viewLifecycleOwner) { isLiked ->
-            // Checkbox durumunu kodla değiştirirken listener tetiklenmesin diye null yapıyoruz
             binding.cbLike.setOnCheckedChangeListener(null)
             binding.cbLike.isChecked = isLiked
-
-            // Sadece kullanıcı parmağıyla basarsa çalışsın diye ClickListener kullanıyoruz
-            // (CheckBox için setOnClickListener daha güvenlidir bu durumlarda)
-            binding.cbLike.setOnClickListener {
-                viewModel.toggleLike()
-            }
+            binding.cbLike.setOnClickListener { viewModel.toggleLike() }
         }
 
-        // İzleme Listesi Durumu
         viewModel.isWatchlisted.observe(viewLifecycleOwner) { isSaved ->
             binding.cbWatchList.setOnCheckedChangeListener(null)
             binding.cbWatchList.isChecked = isSaved
-            binding.cbWatchList.setOnClickListener {
-                viewModel.toggleWatchlist()
-            }
+            binding.cbWatchList.setOnClickListener { viewModel.toggleWatchlist() }
         }
 
-        // Toplam Beğeni Sayısı (Global)
         viewModel.totalLikes.observe(viewLifecycleOwner) { count ->
             binding.tvLikeCount.text = "$count Beğeni"
         }
+
+        viewModel.comments.observe(viewLifecycleOwner) { comments ->
+            commentsAdapter.submitList(comments)
+        }
+
+        viewModel.commentPostStatus.observe(viewLifecycleOwner) { status ->
+            if (status.startsWith("SUCCESS") || status.startsWith("TEBRİKLER")) {
+                // Eğer status SUCCESS ise normal mesaj, TEBRİKLER ile başlıyorsa rozet mesajıdır
+                val message = if(status == "SUCCESS") "Yorumunuz gönderildi." else status
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                binding.etComment.text?.clear()
+                binding.cbSpoiler.isChecked = false
+            } else if (status.isNotEmpty()) {
+                Toast.makeText(context, status, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // YENİ: Listeye Ekleme Durumu Bildirimi
+        viewModel.addToListStatus.observe(viewLifecycleOwner) { message ->
+            if (!message.isNullOrEmpty()) {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                // Mesajı tekrar göstermemek için null yapılabilir ama Toast zaten kaybolur.
+            }
+        }
+    }
+
+    // YENİ FONKSİYON: Bottom Sheet Açma ve Yönetme
+    private fun showAddToListBottomSheet() {
+        val dialog = BottomSheetDialog(requireContext())
+        val sheetView = LayoutInflater.from(requireContext()).inflate(R.layout.bottom_sheet_select_list, null)
+        dialog.setContentView(sheetView)
+
+        val rvLists = sheetView.findViewById<RecyclerView>(R.id.rvUserLists)
+        val progressBar = sheetView.findViewById<ProgressBar>(R.id.progressBarLists)
+        val tvNoList = sheetView.findViewById<TextView>(R.id.tvNoListWarning)
+
+        // Adapter Kurulumu
+        val listAdapter = UserListSelectionAdapter { selectedList ->
+            // Bir listeye tıklandığında çalışacak kod:
+            val currentMovie = viewModel.movieDetail.value
+            if (currentMovie != null) {
+                // ViewModel'deki ekleme fonksiyonunu çağır
+                viewModel.addMovieToCustomList(selectedList.listId, currentMovie)
+                dialog.dismiss() // Pencereyi kapat
+            } else {
+                Toast.makeText(context, "Film bilgisi henüz yüklenmedi.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        rvLists.layoutManager = LinearLayoutManager(requireContext())
+        rvLists.adapter = listAdapter
+
+        // Listeleri Gözlemle (Dialog açıkken veriler gelirse güncelle)
+        progressBar.visibility = View.VISIBLE
+        viewModel.userLists.observe(viewLifecycleOwner) { lists ->
+            progressBar.visibility = View.GONE
+            if (lists.isNullOrEmpty()) {
+                tvNoList.visibility = View.VISIBLE
+                rvLists.visibility = View.GONE
+            } else {
+                tvNoList.visibility = View.GONE
+                rvLists.visibility = View.VISIBLE
+                listAdapter.submitList(lists)
+            }
+        }
+
+        dialog.show()
     }
 
     private fun bindMovieDetails(movie: MovieDetail) {
         binding.apply {
 
             btnWatchMovie.setOnClickListener {
-                // Test için sabit bir URL gönderiyoruz (Big Buck Bunny)
                 val dummyVideoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-
-                // Safe Args ile PlayerFragment'a URL gönder
                 val action = DetailMovieFragmentDirections.actionDetailMovieFragmentToPlayerFragment(dummyVideoUrl)
                 findNavController().navigate(action)
             }
@@ -195,7 +275,6 @@ class DetailMovieFragment : Fragment() {
             val date = movie.releaseDate?.take(4) ?: ""
             val genreText = movie.genres?.joinToString(", ") { it.name ?: "" }
 
-            // Süre Hesaplama
             val totalMinutes = movie.runtime ?: 0
             if (totalMinutes > 0) {
                 val hours = totalMinutes / 60
@@ -205,7 +284,6 @@ class DetailMovieFragment : Fragment() {
                 lenghtTextView.text = "Süre bilinmiyor"
             }
 
-            // Puanlama
             val rating = movie.voteAverage?.times(10)
             val color = when {
                 rating != null && rating < 40 -> Color.RED
@@ -226,12 +304,10 @@ class DetailMovieFragment : Fragment() {
             descriptionTextView.text = movie.overview
             originalTitleTextView.text = movie.originalTitle ?: "-"
 
-            // Extension Kullanımları:
             originalLanguageTextView.text = movie.originalLanguage.formatLanguage()
             budgetTextView.text = movie.budget.formatCurrency()
             revenueTextView.text = movie.revenue.formatCurrency()
 
-            // Dialog Extension Kullanımı:
             if (!movie.overview.isNullOrEmpty()) {
                 readMoreHint.visibility = View.VISIBLE
                 val clickListener = View.OnClickListener { requireContext().showDescriptionDialog(movie.overview) }

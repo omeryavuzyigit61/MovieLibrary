@@ -4,7 +4,9 @@ data class User(
     val userId: String = "",
     val email: String = "",
     val nickname: String = "",
-    val birthDate: Long = 0L, // Yaşı string veya int tutabilirsin, edittext'ten string geliyor
-    val favorites: List<Int> = emptyList(), // İleride film ID'leri buraya gelecek
-    val watchList: List<Int> = emptyList()
+    val gender: String = "",
+    val birthDate: Long = 0L,
+    val registerDate: Long = System.currentTimeMillis(), // Üyelik süresi için lazım
+    val earnedBadges: List<String> = emptyList(),
+    val stats: Map<String, Int> = emptyMap(),
 )

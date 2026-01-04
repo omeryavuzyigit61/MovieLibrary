@@ -10,4 +10,8 @@
     <color name="background_color">#F8F8FA</color>
     <color name="shimmer_placeholder">#DDDDDD</color>
     <color name="main_color_ripple">#1A2196F3</color>
+    <color name="badge_icon_bronze">#0D47A1</color>
+    <color name="badge_icon_silver">#4A148C</color>
+    <color name="badge_icon_gold">#3E2723</color>
+    <color name="badge_default">#808080</color>
 </resources>

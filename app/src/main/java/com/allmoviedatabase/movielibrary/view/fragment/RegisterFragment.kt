@@ -3,6 +3,7 @@ package com.allmoviedatabase.movielibrary.view.fragment
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.View
+import android.widget.RadioButton
 import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -33,7 +34,6 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentRegisterBinding.bind(view)
-
         setupListeners()
         observeViewModel()
     }
@@ -55,12 +55,24 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
 
         // Kayıt Ol Butonu
         binding.btnRegister.setOnClickListener {
+            val selectedGenderId = binding.rgGender.checkedRadioButtonId
+            var gender = ""
+
+            if (selectedGenderId != -1) {
+                val selectedRadioButton = binding.root.findViewById<RadioButton>(selectedGenderId)
+                gender = selectedRadioButton.text.toString() // "Erkek" veya "Kadın" döner
+            } else {
+                // Hiçbiri seçilmemişse kullanıcıyı uyarabilirsin
+                Toast.makeText(context, "Lütfen cinsiyet seçiniz", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             viewModel.registerUser(
                 email = binding.etRegEmail.text.toString().trim(),
                 pass = binding.etRegPassword.text.toString().trim(),
                 confirmPass = binding.etRegPasswordConfirm.text.toString().trim(),
                 nickname = binding.etNickname.text.toString().trim(),
                 birthDate = selectedBirthDateMillis,
+                gender = gender,
                 isTermsAccepted = binding.cbTerms.isChecked
             )
         }

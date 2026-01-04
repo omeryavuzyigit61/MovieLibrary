@@ -11,7 +11,7 @@ import com.allmoviedatabase.movielibrary.util.Constants.IMAGE_BASE_URL
 import com.bumptech.glide.Glide
 
 class ProfileMediaAdapter(
-    private val onItemClick: (Int, String) -> Unit // ID ve MediaType (movie/tv) döner
+    private val onItemClick: (Int, String) -> Unit
 ) : ListAdapter<ProfileMediaItem, ProfileMediaAdapter.MediaViewHolder>(DiffCallback) {
 
     inner class MediaViewHolder(private val binding: ItemProfileMediaBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -20,10 +20,15 @@ class ProfileMediaAdapter(
 
             Glide.with(binding.root.context)
                 .load(IMAGE_BASE_URL + item.posterPath)
-                .into(binding.ivPoster)
+                .into(binding.ivPoster) // Senin xml'inde id ivPoster ise burası doğru
 
             binding.root.setOnClickListener {
-                onItemClick(item.getId(), item.mediaType)
+                // Modelde güncellediğimiz getId() sayesinde artık 0 gelmeyecek
+                val realId = item.getEffectiveId()
+
+                if (realId != 0) {
+                    onItemClick(realId, item.mediaType)
+                }
             }
         }
     }
@@ -39,7 +44,7 @@ class ProfileMediaAdapter(
 
     companion object DiffCallback : DiffUtil.ItemCallback<ProfileMediaItem>() {
         override fun areItemsTheSame(oldItem: ProfileMediaItem, newItem: ProfileMediaItem): Boolean {
-            return oldItem.getId() == newItem.getId()
+            return oldItem.getEffectiveId() == newItem.getEffectiveId()
         }
 
         override fun areContentsTheSame(oldItem: ProfileMediaItem, newItem: ProfileMediaItem): Boolean {

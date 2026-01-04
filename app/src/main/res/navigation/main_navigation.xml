@@ -84,6 +84,32 @@
         <action
             android:id="@+id/action_profileFragment_to_detailTvShowFragment"
             app:destination="@id/detailTvShowFragment" />
+
+        <action
+            android:id="@+id/action_profileFragment_to_userListDetailFragment"
+            app:destination="@id/userListDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/userListDetailFragment"
+        android:name="com.allmoviedatabase.movielibrary.view.fragment.UserListDetailFragment"
+        android:label="fragment_user_list_detail"
+        tools:layout="@layout/fragment_user_list_detail">
+
+        <argument
+            android:name="listId"
+            app:argType="string" />
+        <argument
+            android:name="listName"
+            app:argType="string" />
+
+        <action
+            android:id="@+id/action_userListDetailFragment_to_detailMovieFragment"
+            app:destination="@id/detailMovieFragment" />
+
+        <action
+            android:id="@+id/action_userListDetailFragment_to_detailTvShowFragment"
+            app:destination="@id/detailTvShowFragment" />
     </fragment>
 
     <fragment
@@ -171,7 +197,6 @@
             android:id="@+id/action_personDetailFragment_to_detailMovieFragment"
             app:destination="@id/detailMovieFragment" />
     </fragment>
-
 
     <fragment
         android:id="@+id/seasonDetailFragment"
